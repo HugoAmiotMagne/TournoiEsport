@@ -29,7 +29,7 @@ exports.createBar = async (req, res) => {
       telephone,
       horaires,
       description,
-      proprietaire: req.user.id // L'utilisateur connecté devient propriétaire
+      proprietaire: req.user.id
     });
 
     await bar.save();
@@ -46,7 +46,7 @@ exports.getAllBars = async (req, res) => {
   try {
     const bars = await Bar.find()
       .populate('proprietaire', '-Password')
-      .populate('salles'); // Utilise le virtual
+      .populate('salles');
     res.status(200).json(bars);
   } catch (error) {
     res.status(500).json({ message: 'Erreur lors de la récupération des bars', error: error.message });
@@ -58,7 +58,7 @@ exports.getBarById = async (req, res) => {
   try {
     const bar = await Bar.findById(req.params.id)
       .populate('proprietaire', '-Password')
-      .populate('salles'); // Utilise le virtual
+      .populate('salles');
     
     if (!bar) {
       return res.status(404).json({ message: 'Bar non trouvé' });
