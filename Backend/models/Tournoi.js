@@ -5,12 +5,12 @@ const tournoiSchema = new mongoose.Schema({
   description: { type: String, required: true },
   date_debut: { type: Date, required: true },
   date_fin: { type: Date, required: true },
-  jeu: { type: mongoose.Schema.Types.ObjectId, ref: 'Jeu', required: true },
-  salle: { type: mongoose.Schema.Types.ObjectId, ref: 'Salle' },
+  jeu: { type: mongoose.Schema.Types.ObjectId, ref: 'Jeu', required: true }, //Many-to-One
+  salle: { type: mongoose.Schema.Types.ObjectId, ref: 'Salle' }, //Many-to-One
   statut: { type: String, enum: ['à venir', 'en cours', 'terminé', 'annulé'], default: 'à venir' },
   prix_inscription: { type: Number, default: 0 },
   nombre_equipes_max: { type: Number, default: 16 },
-  createur: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true } 
+  createur: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true } // Many-to-One
 }, { timestamps: true });
 
 // Validation des dates
