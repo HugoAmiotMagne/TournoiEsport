@@ -6,8 +6,8 @@ const equipeSchema = new mongoose.Schema({
   logo: { type: String }, 
   description: { type: String },
   jeu_principal: { type: mongoose.Schema.Types.ObjectId, ref: 'Jeu' },
-  capitaine: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // ✅ AJOUTÉ
-  membres: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] // ✅ AJOUTÉ
+  capitaine: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, 
+  membres: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] 
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
