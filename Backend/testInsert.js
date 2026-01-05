@@ -123,7 +123,7 @@ async function testInsert() {
         Name: 'Team Alpha',
         logo: 'https://example.com/team-alpha.png',
         description: 'Équipe professionnelle de Counter-Strike',
-        jeu_principal: jeu._id
+        capitaine: user1._id  // ✅ CORRIGÉ : Ajout du capitaine requis
       });
       await equipe1.save();
       console.log('Équipe 1 créée :', equipe1.Name);
@@ -137,7 +137,7 @@ async function testInsert() {
         Name: 'Team Beta',
         logo: 'https://example.com/team-beta.png',
         description: 'Équipe compétitive CS2',
-        jeu_principal: jeu._id
+        capitaine: user2._id  // ✅ CORRIGÉ : Ajout du capitaine requis
       });
       await equipe2.save();
       console.log('Équipe 2 créée :', equipe2.Name);
@@ -199,6 +199,7 @@ async function testInsert() {
         date_fin: new Date('2026-03-03'),
         jeu: jeu._id,
         salle: salle._id,
+        createur: user1._id,  // ✅ Ajout du créateur requis
         statut: 'à venir',
         prix_inscription: 50,
         nombre_equipes_max: 16
@@ -450,6 +451,7 @@ async function testInsert() {
       console.log('Stream 3 déjà existant');
     }
 
+    console.log('\n✅ Tous les tests d\'insertion sont terminés avec succès !');
 
   } catch (err) {
     console.error('\nErreur lors des tests :', err.message);
