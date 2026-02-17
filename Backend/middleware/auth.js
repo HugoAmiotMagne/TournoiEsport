@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
   try {
+
     if (!req.headers.authorization) {
       return res.status(401).json({ message: "Token manquant." });
     }
@@ -13,7 +14,7 @@ module.exports = (req, res, next) => {
 
     const token = parts[1];
 
-    // Si le token correspond au token admin de l'env, on lui donne tous les droits
+    // Si le token correspond au token admin
     if (token === process.env.ADMIN_TOKEN) {
       req.user = { id: "ADMIN", role: "admin" };
       return next();
