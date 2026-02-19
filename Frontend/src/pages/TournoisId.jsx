@@ -1,91 +1,318 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
+import { getTournoiById } from '../services/api';
+
+const rStyle = (tl, tr, bl, br) => ({
+  borderTopLeftRadius: tl,
+  borderTopRightRadius: tr,
+  borderBottomLeftRadius: bl,
+  borderBottomRightRadius: br,
+});
+
+const asym = rStyle('1.5rem', '0', '1.5rem', '1.5rem');
+const asymSm = rStyle('1rem', '0', '1rem', '1rem');
+
+const StatutBadge = ({ statut }) => {
+  const map = {
+    'en cours':  { bg: 'bg-yellow-400', text: 'text-green-900' },
+    'à venir':   { bg: 'bg-green-300',  text: 'text-green-900' },
+    'terminé':   { bg: 'bg-gray-400',   text: 'text-gray-900'  },
+    'annulé':    { bg: 'bg-red-400',    text: 'text-white'     },
+  };
+  const c = map[statut] || { bg: 'bg-gray-400', text: 'text-white' };
+  return (
+    <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${c.bg} ${c.text}`}>
+      {statut}
+    </span>
+  );
+};
+
+const InfoBlock = ({ label, children }) => (
+  <div className="bg-green-700 p-4 rounded-xl">
+    <p className="text-green-200 text-xs uppercase tracking-widest mb-1">{label}</p>
+    <div className="text-white font-semibold text-lg leading-tight">{children}</div>
+  </div>
+);
 
 export default function TournoiId() {
   const { id } = useParams();
   const [tournoi, setTournoi] = useState(null);
-  const [error, setError] = useState(null);
+  const [error, setError]     = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:3002/api/tournois/${id}`)
-      .then(res => {
-        if (!res.ok) {
-          throw new Error('Tournoi introuvable');
-        }
-        return res.json();
-      })
+    getTournoiById(id, 'jeu,salle,createur,inscriptions,matchs')
       .then(data => setTournoi(data))
       .catch(err => setError(err.message));
   }, [id]);
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-[#E8F5A8] flex items-center justify-center">
-        <p className="text-red-600 text-xl">{error}</p>
-      </div>
-    );
-  }
+  if (error) return (
+    <div className="min-h-screen bg-[#E8F5A8] flex items-center justify-center px-4">
+      <p className="text-red-600 text-xl text-center">{error}</p>
+    </div>
+  );
 
-  if (!tournoi) {
-    return (
-      <div className="min-h-screen bg-[#E8F5A8] flex items-center justify-center">
-        <p className="text-gray-800 text-xl">Chargement...</p>
+  if (!tournoi) return (
+    <div className="min-h-screen bg-[#E8F5A8] flex items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
+        <p className="text-gray-700 font-medium">Chargement du tournoi…</p>
       </div>
-    );
-  }
+    </div>
+  );
+
+  const duree = Math.ceil(
+    (new Date(tournoi.date_fin) - new Date(tournoi.date_debut)) / (1000 * 60 * 60 * 24)
+  );
+
+  const inscriptionsCount = tournoi.inscriptions?.length ?? 0;
+  const matchsCount       = tournoi.matchs?.length ?? '—';
+  const isFull            = inscriptionsCount >= tournoi.nombre_equipes_max;
+  const isOpen            = tournoi.statut === 'à venir' || tournoi.statut === 'en cours';
 
   return (
-    <div className="min-h-screen bg-[#E8F5A8] w-full py-12 px-8">
-      <div 
-        className="max-w-4xl mx-auto bg-gradient-to-br from-green-600 to-green-700 shadow-2xl p-8 text-white"
-        style={{ 
-          borderTopLeftRadius: '1.5rem',
-          borderTopRightRadius: '0',
-          borderBottomLeftRadius: '1.5rem',
-          borderBottomRightRadius: '1.5rem'
-        }}
-      >
-        {/* Titre */}
-        <h1 className="text-4xl font-bold text-center mb-2">{tournoi.Name}</h1>
+    <div className="min-h-screen bg-[#E8F5A8] w-full py-8 sm:py-12 px-4 sm:px-8">
 
-        {/* Dates */}
-        <p className="text-center text-green-200 mb-6">
-          {new Date(tournoi.date_debut).toLocaleDateString('fr-FR')} — {new Date(tournoi.date_fin).toLocaleDateString('fr-FR')}
-        </p>
-
-        {/* Description */}
-        <div 
-          className="bg-green-800 p-6 mb-6"
-          style={{ 
-            borderTopLeftRadius: '1rem',
-            borderTopRightRadius: '0',
-            borderBottomLeftRadius: '1rem',
-            borderBottomRightRadius: '1rem'
-          }}
+      {/* Retour */}
+      <div className="max-w-4xl mx-auto mb-5">
+        <Link
+          to="/tournois"
+          className="inline-flex items-center gap-2 text-green-800 font-semibold hover:text-green-600 transition-colors text-sm"
         >
-          <h3 className="text-yellow-300 font-semibold text-xl mb-3">Description :</h3>
-          <p className="text-green-100 mb-4">{tournoi.description}</p>
-          <p className="text-yellow-300 font-medium text-lg">
-            {tournoi.nombre_equipes_max} équipes maximum
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Tous les tournois
+        </Link>
+      </div>
+
+      <div
+        className="max-w-4xl mx-auto bg-gradient-to-br from-green-600 to-green-700 shadow-2xl text-white overflow-hidden"
+        style={asym}
+      >
+        {/* ── Hero header ── */}
+        <div className="px-6 sm:px-10 pt-8 sm:pt-10 pb-6 text-center relative">
+          {/* Jeu en surtitre */}
+          {tournoi.jeu && (
+            <p className="text-yellow-300 text-xs sm:text-sm font-bold uppercase tracking-widest mb-2">
+              {tournoi.jeu.name ?? tournoi.jeu.Name ?? 'Jeu'}
+            </p>
+          )}
+
+          <h1 className="text-3xl sm:text-5xl font-bold leading-tight mb-3" style={{ fontFamily: 'Georgia, serif' }}>
+            {tournoi.Name}
+          </h1>
+
+          <StatutBadge statut={tournoi.statut} />
+
+          <p className="text-green-200 text-sm mt-4">
+            Du <span className="font-semibold text-white">
+              {new Date(tournoi.date_debut).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </span>
+            {' '}au{' '}
+            <span className="font-semibold text-white">
+              {new Date(tournoi.date_fin).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </span>
+            <span className="ml-2 text-green-300">({duree} jour{duree > 1 ? 's' : ''})</span>
           </p>
         </div>
 
-        {/* Informations détaillées */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-green-700 p-4 rounded-lg">
-            <p className="text-green-200 text-sm">Prix d'inscription</p>
-            <p className="text-2xl font-bold">{tournoi.prix_inscription}€</p>
-          </div>
-          <div className="bg-green-700 p-4 rounded-lg">
-            <p className="text-green-200 text-sm">Statut</p>
-            <p className={`text-2xl font-bold ${
-              tournoi.statut === 'en cours' ? 'text-yellow-300' : 
-              tournoi.statut === 'à venir' ? 'text-green-300' : 'text-gray-300'
-            }`}>
-              {tournoi.statut}
-            </p>
+        {/* ── Description ── */}
+        <div className="px-6 sm:px-10 pb-6">
+          <div className="bg-green-800 p-5 sm:p-6" style={asymSm}>
+            <h3 className="text-yellow-300 font-semibold text-lg mb-2">Description</h3>
+            <p className="text-green-100 leading-relaxed">{tournoi.description}</p>
           </div>
         </div>
+
+        {/* ── Infos rapides ── */}
+        <div className="px-6 sm:px-10 pb-6">
+          <h3 className="text-yellow-300 font-semibold text-sm uppercase tracking-widest mb-3">Informations</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <InfoBlock label="Prix d'inscription">
+              {tournoi.prix_inscription === 0 ? (
+                <span className="text-green-300">Gratuit</span>
+              ) : (
+                `${tournoi.prix_inscription} €`
+              )}
+            </InfoBlock>
+
+            <InfoBlock label="Équipes max">
+              {tournoi.nombre_equipes_max}
+            </InfoBlock>
+
+            <InfoBlock label="Inscriptions">
+              <span className={isFull ? 'text-red-300' : 'text-white'}>
+                {inscriptionsCount}
+                <span className="text-green-300 text-sm font-normal"> / {tournoi.nombre_equipes_max}</span>
+              </span>
+            </InfoBlock>
+
+            <InfoBlock label="Matchs joués">
+              {matchsCount}
+            </InfoBlock>
+          </div>
+        </div>
+
+        {/* ── Bouton inscription ── */}
+        {isOpen && (
+          <div className="px-6 sm:px-10 pb-6">
+            {isFull ? (
+              <div className="flex items-center justify-center gap-3 bg-red-500/20 border-2 border-red-400 rounded-2xl px-6 py-4">
+                <svg className="w-6 h-6 text-red-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+                <div>
+                  <p className="text-red-300 font-bold text-lg">Tournoi complet</p>
+                  <p className="text-red-200 text-sm">
+                    Les {tournoi.nombre_equipes_max} équipes sont déjà inscrites.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-2">
+                <Link
+                  to={`/inscription/tournois/${id}`}
+                  className="w-full sm:w-auto px-10 py-4 bg-yellow-400 hover:bg-yellow-300
+                             text-green-900 font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl
+                             transition-all duration-200 hover:scale-[1.03] active:scale-[0.98]
+                             flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  </svg>
+                  S&apos;inscrire au tournoi
+                </Link>
+                <p className="text-green-300 text-xs">
+                  {tournoi.nombre_equipes_max - inscriptionsCount} place{tournoi.nombre_equipes_max - inscriptionsCount > 1 ? 's' : ''} restante{tournoi.nombre_equipes_max - inscriptionsCount > 1 ? 's' : ''}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Jeu ── */}
+        {tournoi.jeu && typeof tournoi.jeu === 'object' && (
+          <div className="px-6 sm:px-10 pb-6">
+            <h3 className="text-yellow-300 font-semibold text-sm uppercase tracking-widest mb-3">Jeu</h3>
+            <div className="bg-green-800 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4" style={asymSm}>
+              {tournoi.jeu.image && (
+                <img
+                  src={tournoi.jeu.image}
+                  alt={tournoi.jeu.name ?? tournoi.jeu.Name}
+                  className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                />
+              )}
+              <div>
+                <p className="text-white font-bold text-xl">{tournoi.jeu.name ?? tournoi.jeu.Name}</p>
+                {tournoi.jeu.genre && (
+                  <p className="text-green-300 text-sm mt-1">{tournoi.jeu.genre}</p>
+                )}
+                {tournoi.jeu.description && (
+                  <p className="text-green-200 text-sm mt-1 line-clamp-2">{tournoi.jeu.description}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Salle ── */}
+        {tournoi.salle && typeof tournoi.salle === 'object' && (
+          <div className="px-6 sm:px-10 pb-6">
+            <h3 className="text-yellow-300 font-semibold text-sm uppercase tracking-widest mb-3">Lieu</h3>
+            <div className="bg-green-800 p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-8" style={asymSm}>
+              <div>
+                <p className="text-white font-bold text-lg">{tournoi.salle.name ?? tournoi.salle.Name}</p>
+                {tournoi.salle.adresse && (
+                  <p className="text-green-300 text-sm mt-1 flex items-center gap-1">
+                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    {tournoi.salle.adresse}
+                  </p>
+                )}
+              </div>
+              {tournoi.salle.capacite && (
+                <div className="bg-green-700 px-4 py-2 rounded-xl self-start">
+                  <p className="text-green-200 text-xs">Capacité</p>
+                  <p className="text-white font-bold">{tournoi.salle.capacite} pers.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── Équipes inscrites ── */}
+        {Array.isArray(tournoi.inscriptions) && tournoi.inscriptions.length > 0 && (
+          <div className="px-6 sm:px-10 pb-6">
+            <h3 className="text-yellow-300 font-semibold text-sm uppercase tracking-widest mb-3">
+              Équipes inscrites ({tournoi.inscriptions.length})
+            </h3>
+            <div className="bg-green-800 p-4 sm:p-5" style={asymSm}>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {tournoi.inscriptions.map((ins, i) => (
+                  <li key={ins._id ?? i} className="flex items-center gap-2 text-green-100 text-sm">
+                    <span className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                      {i + 1}
+                    </span>
+                    {ins.equipe?.name ?? ins.equipe?.Name ?? ins.equipe ?? `Équipe ${i + 1}`}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* ── Matchs ── */}
+        {Array.isArray(tournoi.matchs) && tournoi.matchs.length > 0 && (
+          <div className="px-6 sm:px-10 pb-6">
+            <h3 className="text-yellow-300 font-semibold text-sm uppercase tracking-widest mb-3">
+              Matchs ({tournoi.matchs.length})
+            </h3>
+            <div className="bg-green-800 p-4 sm:p-5 space-y-2" style={asymSm}>
+              {tournoi.matchs.map((match, i) => (
+                <div key={match._id ?? i}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between bg-green-700 px-4 py-3 rounded-lg gap-2"
+                >
+                  <span className="text-white font-semibold text-sm">
+                    {match.equipe1?.name ?? 'Équipe 1'} <span className="text-yellow-300 mx-2">vs</span> {match.equipe2?.name ?? 'Équipe 2'}
+                  </span>
+                  {(match.score1 !== undefined || match.score2 !== undefined) && (
+                    <span className="text-yellow-300 font-bold text-lg">
+                      {match.score1 ?? '—'} : {match.score2 ?? '—'}
+                    </span>
+                  )}
+                  {match.date && (
+                    <span className="text-green-300 text-xs">
+                      {new Date(match.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Créateur ── */}
+        {tournoi.createur && typeof tournoi.createur === 'object' && (
+          <div className="px-6 sm:px-10 pb-8">
+            <div className="border-t border-green-500 pt-5 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
+                {(tournoi.createur.username ?? tournoi.createur.name ?? '?')[0].toUpperCase()}
+              </div>
+              <div>
+                <p className="text-green-200 text-xs">Tournoi créé par</p>
+                <p className="text-white font-semibold text-sm">
+                  {tournoi.createur.username ?? tournoi.createur.name ?? tournoi.createur.email}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

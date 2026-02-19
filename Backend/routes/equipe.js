@@ -62,24 +62,6 @@ router.get('/:id', equipeController.getEquipeById);
  */
 router.get('/', equipeController.getAllEquipes);
 
-// Routes protégées
-
-/**
- * @swagger
- * /api/equipes/mon-equipes:
- *   get:
- *     summary: Récupérer mes équipes (utilisateur connecté)
- *     tags: [Equipes]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Liste des équipes de l'utilisateur
- *       401:
- *         description: Non autorisé
- */
-router.get('/mon-equipe', auth, equipeController.getMyEquipe);
-
 /**
  * @swagger
  * /api/equipes:
@@ -100,7 +82,25 @@ router.get('/mon-equipe', auth, equipeController.getMyEquipe);
  *       401:
  *         description: Non autorisé
  */
-router.post('/', auth, equipeController.createEquipe);
+router.post('/new', auth, equipeController.createEquipe);
+
+// Routes protégées
+
+/**
+ * @swagger
+ * /api/equipes/mon-equipes:
+ *   get:
+ *     summary: Récupérer mes équipes (utilisateur connecté)
+ *     tags: [Equipes]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Liste des équipes de l'utilisateur
+ *       401:
+ *         description: Non autorisé
+ */
+router.get('/mon-equipe', auth, equipeController.getMyEquipe);
 
 /**
  * @swagger
