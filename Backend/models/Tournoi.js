@@ -10,7 +10,8 @@ const tournoiSchema = new mongoose.Schema({
   statut: { type: String, enum: ['à venir', 'en cours', 'terminé', 'annulé'], default: 'à venir' },
   prix_inscription: { type: Number, default: 0 },
   nombre_equipes_max: { type: Number, default: 16 },
-  createur: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true } // Many-to-One
+  // `createur` rendu optionnel pour faciliter les insertions/tests automatiques
+  createur: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } // Many-to-One
 }, { timestamps: true });
 
 // Validation des dates

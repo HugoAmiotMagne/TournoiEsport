@@ -56,6 +56,8 @@ app.use('/api/matches', MatchRoutes);
 app.use('/api/streams', StreamRoutes); 
 app.use('/api/inscriptions', InscriptionRoutes); 
 app.use('/api/membreteams', MembreTeamRoutes); 
+app.use('/uploads', express.static('uploads'));
+
  
  
 // MongoDB 

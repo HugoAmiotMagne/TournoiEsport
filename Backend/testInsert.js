@@ -15,13 +15,27 @@ async function testInsert() {
   try {
     console.log('Début des tests d\'insertion...\n');
 
+    // Helper upsert to avoid duplicate key errors during test inserts
+    async function upsert(model, query, doc) {
+      const res = await model.findOneAndUpdate(
+        query,
+        { $setOnInsert: doc },
+        { upsert: true, new: true, setDefaultsOnInsert: true, rawResult: true }
+      );
+      return { doc: res.value, created: !!(res.lastErrorObject && res.lastErrorObject.upserted) };
+    }
+
+    // Declare variables used across upserts
+    let user1, user2, bar, bar2, salle, salle2, jeu, jeu2, equipe1, equipe2, equipe3;
+    let membre1, membre2, tournoi, tournoi2, billet, billet2, match, match2;
+    let partie1, partie2, partie3, inscription1, inscription2, stream1, stream2, stream3;
+
     // ======================
     // 1. UTILISATEURS
     // ======================
     console.log('Test Users...');
-    let user1 = await User.findOne({ email: 'test@example.com' });
-    if (!user1) {
-      user1 = new User({
+    {
+      const res = await upsert(User, { email: 'test@example.com' }, {
         email: 'test@example.com',
         password: 'hashedpassword123',
         prenom: 'Jean',
@@ -29,15 +43,12 @@ async function testInsert() {
         date_de_naissance: new Date('1990-05-15'),
         role: 'user'
       });
-      await user1.save();
-      console.log('Utilisateur 1 créé :', user1.prenom, user1.nom);
-    } else {
-      console.log('Utilisateur 1 déjà existant');
+      user1 = res.doc;
+      console.log(res.created ? 'Utilisateur 1 créé :' : 'Utilisateur 1 déjà existant :', user1.prenom, user1.nom);
     }
 
-    let user2 = await User.findOne({ email: 'player2@example.com' });
-    if (!user2) {
-      user2 = new User({
+    {
+      const res = await upsert(User, { email: 'player2@example.com' }, {
         email: 'player2@example.com',
         password: 'hashedpassword456',
         prenom: 'Marie',
@@ -45,19 +56,16 @@ async function testInsert() {
         date_de_naissance: new Date('1992-08-20'),
         role: 'user'
       });
-      await user2.save();
-      console.log('Utilisateur 2 créé :', user2.prenom, user2.nom);
-    } else {
-      console.log('Utilisateur 2 déjà existant');
+      user2 = res.doc;
+      console.log(res.created ? 'Utilisateur 2 créé :' : 'Utilisateur 2 déjà existant :', user2.prenom, user2.nom);
     }
 
     // ======================
     // 2. BAR
     // ======================
     console.log('\nTest Bar...');
-    let bar = await Bar.findOne({ email: 'bar@example.com' });
-    if (!bar) {
-      bar = new Bar({
+    {
+      const res = await upsert(Bar, { email: 'bar@example.com' }, {
         nom: 'Le Gaming Spot',
         adresse: '123 Rue de la Victoire, 75009 Paris',
         email: 'bar@example.com',
@@ -66,19 +74,31 @@ async function testInsert() {
         description: 'Bar gaming avec salles équipées',
         proprietaire: user1._id
       });
-      await bar.save();
-      console.log('Bar créé :', bar.nom);
-    } else {
-      console.log('Bar déjà existant');
+      bar = res.doc;
+      console.log(res.created ? 'Bar créé :' : 'Bar déjà existant :', bar.nom);
+    }
+
+    // Bar 2
+    {
+      const res = await upsert(Bar, { email: 'bar2@example.com' }, {
+        nom: 'LAN Café',
+        adresse: '45 Rue des Jeux, 69003 Lyon',
+        email: 'bar2@example.com',
+        telephone: '0987654321',
+        horaires: 'Mar-Dim: 12h-1h',
+        description: 'Café dédié aux tournois locaux',
+        proprietaire: user2._id
+      });
+      bar2 = res.doc;
+      console.log(res.created ? 'Bar 2 créé :' : 'Bar 2 déjà existant :', bar2.nom);
     }
 
     // ======================
     // 3. SALLE
     // ======================
     console.log('\nTest Salle...');
-    let salle = await Salle.findOne({ Name: 'Salle Pro 1', bar: bar._id });
-    if (!salle) {
-      salle = new Salle({
+    {
+      const res = await upsert(Salle, { Name: 'Salle Pro 1', bar: bar._id }, {
         Name: 'Salle Pro 1',
         capacite_spectateur: 100,
         equipement: 'PC Gaming RTX 4090, Écrans 240Hz, Chaises DXRacer',
@@ -87,63 +107,97 @@ async function testInsert() {
         bar: bar._id,
         description: 'Salle professionnelle équipée pour les tournois'
       });
-      await salle.save();
-      console.log('Salle créée :', salle.Name);
-    } else {
-      console.log('Salle déjà existante');
+      salle = res.doc;
+      console.log(res.created ? 'Salle créée :' : 'Salle déjà existante :', salle.Name);
+    }
+
+    // Salle 2
+    {
+      const res = await upsert(Salle, { Name: 'Salle Local 2', bar: bar2._id }, {
+        Name: 'Salle Local 2',
+        capacite_spectateur: 40,
+        equipement: 'PC Gaming RTX 3080, Écrans 144Hz',
+        disponible: true,
+        nombre_joueur: 5,
+        bar: bar2._id,
+        description: 'Salle cosy pour petites compétitions'
+      });
+      salle2 = res.doc;
+      console.log(res.created ? 'Salle 2 créée :' : 'Salle 2 déjà existante :', salle2.Name);
     }
 
     // ======================
     // 4. JEU
     // ======================
     console.log('\nTest Jeu...');
-    let jeu = await Jeu.findOne({ Name: 'Counter-Strike 2' });
-    if (!jeu) {
-      jeu = new Jeu({
-        Name: 'Counter-Strike 2',
-        Mode: '5v5 Competitive',
-        Map: 'Dust II, Mirage, Inferno',
-        plateforme: 'PC',
-        min_joueur: 2,
-        max_joueur: 10
-      });
-      await jeu.save();
-      console.log('Jeu créé :', jeu.Name);
-    } else {
-      console.log('Jeu déjà existant');
-    }
+      {
+        const res = await upsert(Jeu, { Name: 'Counter-Strike 2' }, {
+          Name: 'Counter-Strike 2',
+          Mode: '5v5 Competitive',
+          Map: 'Dust II, Mirage, Inferno',
+          plateforme: 'PC',
+          min_joueur: 2,
+          max_joueur: 10,
+          image: 'https://th.bing.com/th/id/OIP.rWzDpI0XfaOdEU88H2AOmQHaEK?o=7&cb=defcache2&rm=3&defcache=1&rs=1&pid=ImgDetMain&o=7&rm=3'
+        });
+        jeu = res.doc;
+        console.log(res.created ? 'Jeu créé :' : 'Jeu déjà existant :', jeu.Name);
+      }
+
+      // Jeu 2
+      {
+        const res = await upsert(Jeu, { Name: 'Valorant' }, {
+          Name: 'Valorant',
+          Mode: '5v5',
+          Map: 'Ascent, Bind, Haven',
+          plateforme: 'PC',
+          min_joueur: 2,
+          max_joueur: 10,
+          image: 'https://example.com/valorant.png'
+        });
+        jeu2 = res.doc;
+        console.log(res.created ? 'Jeu 2 créé :' : 'Jeu 2 déjà existant :', jeu2.Name);
+      }
+
+    // Jeu 2 (upserted above)
 
     // ======================
     // 5. ÉQUIPES
     // ======================
     console.log('\nTest Équipes...');
-    let equipe1 = await Equipe.findOne({ Name: 'Team Alpha' });
-    if (!equipe1) {
-      equipe1 = new Equipe({
-        Name: 'Team Alpha',
-        logo: 'https://example.com/team-alpha.png',
-        description: 'Équipe professionnelle de Counter-Strike',
-        jeu_principal: jeu._id
-      });
-      await equipe1.save();
-      console.log('Équipe 1 créée :', equipe1.Name);
-    } else {
-      console.log('Équipe 1 déjà existante');
-    }
+      {
+        const res = await upsert(Equipe, { Name: 'Team Alpha' }, {
+          Name: 'Team Alpha',
+          logo: 'https://old.runitback.gg/wp-content/uploads/2022/11/Vitality-Valorant.webp',
+          description: 'Équipe professionnelle de Counter-Strike',
+          jeu_principal: jeu._id
+        });
+        equipe1 = res.doc;
+        console.log(res.created ? 'Équipe 1 créée :' : 'Équipe 1 déjà existante :', equipe1.Name);
+      }
 
-    let equipe2 = await Equipe.findOne({ Name: 'Team Beta' });
-    if (!equipe2) {
-      equipe2 = new Equipe({
-        Name: 'Team Beta',
-        logo: 'https://example.com/team-beta.png',
-        description: 'Équipe compétitive CS2',
-        jeu_principal: jeu._id
-      });
-      await equipe2.save();
-      console.log('Équipe 2 créée :', equipe2.Name);
-    } else {
-      console.log('Équipe 2 déjà existante');
-    }
+      {
+        const res = await upsert(Equipe, { Name: 'Team Beta' }, {
+          Name: 'Team Beta',
+          logo: 'https://esportbet.com/wp-content/smush-webp/2025/06/Gentle-Mates-1024x585.jpeg.webp',
+          description: 'Équipe compétitive CS2',
+          jeu_principal: jeu._id
+        });
+        equipe2 = res.doc;
+        console.log(res.created ? 'Équipe 2 créée :' : 'Équipe 2 déjà existante :', equipe2.Name);
+      }
+
+    // Équipe 3
+      {
+        const res = await upsert(Equipe, { Name: 'Team Gamma' }, {
+          Name: 'Team Gamma',
+          logo: 'https://mir-s3-cdn-cf.behance.net/projects/404/d5e7b1138018399.Y3JvcCwxMDg4LDg1MSwwLDExNQ.png',
+          description: 'Nouvelle équipe montante',
+          jeu_principal: jeu2 ? jeu2._id : jeu._id
+        });
+        equipe3 = res.doc;
+        console.log(res.created ? 'Équipe 3 créée :' : 'Équipe 3 déjà existante :', equipe3.Name);
+      }
 
     // ======================
     // 5bis. MEMBRES D'ÉQUIPES
@@ -151,7 +205,7 @@ async function testInsert() {
     console.log('\nTest Membres d\'équipes...');
 
     //Membre 1 - Capitaine de Team Alpha
-    let membre1 = await MembreTeam.findOne({ user: user1._id, equipe: equipe1._id });
+    membre1 = await MembreTeam.findOne({ user: user1._id, equipe: equipe1._id });
     if (!membre1) {
       membre1 = new MembreTeam({
         role: 'capitaine',
@@ -169,7 +223,7 @@ async function testInsert() {
     }
 
     // Membre 2 - Capitaine de Team Beta
-    let membre2 = await MembreTeam.findOne({ user: user2._id, equipe: equipe2._id });
+    membre2 = await MembreTeam.findOne({ user: user2._id, equipe: equipe2._id });
     if (!membre2) {
       membre2 = new MembreTeam({
         role: 'capitaine',
@@ -190,7 +244,7 @@ async function testInsert() {
     // 6. TOURNOI
     // ======================
     console.log('\nTest Tournoi...');
-    let tournoi = await Tournoi.findOne({ Name: 'Tournoi CS2 2026' });
+    tournoi = await Tournoi.findOne({ Name: 'Tournoi CS2 2026' });
     if (!tournoi) {
       tournoi = new Tournoi({
         Name: 'Tournoi CS2 2026',
@@ -208,13 +262,32 @@ async function testInsert() {
     } else {
       console.log('Tournoi déjà existant');
     }
+    // Tournoi 2
+    tournoi2 = await Tournoi.findOne({ Name: 'Tournoi Valorant 2026' });
+    if (!tournoi2) {
+      tournoi2 = new Tournoi({
+        Name: 'Tournoi Valorant 2026',
+        description: 'Tournoi Valorant régional',
+        date_debut: new Date('2026-04-10'),
+        date_fin: new Date('2026-04-12'),
+        jeu: jeu2 ? jeu2._id : jeu._id,
+        salle: salle2 ? salle2._id : salle._id,
+        statut: 'à venir',
+        prix_inscription: 30,
+        nombre_equipes_max: 8
+      });
+      await tournoi2.save();
+      console.log('Tournoi 2 créé :', tournoi2.Name);
+    } else {
+      console.log('Tournoi 2 déjà existant');
+    }
 
 
     // ======================
     // 7. BILLET
     // ======================
     console.log('\nTest Billet...');
-    let billet = await Billet.findOne({ 
+    billet = await Billet.findOne({ 
       type: 'VIP', 
       user: user1._id, 
       salle: salle._id 
@@ -236,11 +309,34 @@ async function testInsert() {
       console.log('Billet déjà existant');
     }
 
+    // Billet 2
+    billet2 = await Billet.findOne({ 
+      type: 'Standard', 
+      user: user2._id, 
+      salle: salle._id 
+    });
+    if (!billet2) {
+      billet2 = new Billet({
+        type: 'Standard',
+        prix: 40,
+        quantite: 2,
+        user: user2._id,
+        salle: salle._id,
+        tournoi: tournoi._id,
+        statut: 'disponible',
+        date_evenement: new Date('2026-03-01')
+      });
+      await billet2.save();
+      console.log('Billet 2 créé - Type:', billet2.type, '| Prix:', billet2.prix, '€');
+    } else {
+      console.log('Billet 2 déjà existant');
+    }
+
     // ======================
     // 8. MATCH
     // ======================
     console.log('\nTest Match...');
-    let match = await Match.findOne({ 
+    match = await Match.findOne({ 
       tournoi: tournoi._id,
       participant1: equipe1._id,
       participant2: equipe2._id
@@ -261,13 +357,35 @@ async function testInsert() {
       console.log('Match déjà existant');
     }
 
+    // Match 2 (inversé)
+    match2 = await Match.findOne({ 
+      tournoi: tournoi._id,
+      participant1: equipe2._id,
+      participant2: equipe3._id
+    });
+    if (!match2) {
+      match2 = new Match({
+        date_debut: new Date('2026-03-02T16:00:00'),
+        status: 'en_attente',
+        tournoi: tournoi._id,
+        participant1: equipe2._id,
+        participant2: equipe3._id
+      });
+      await match2.save();
+      await match2.populate(['tournoi', 'participant1', 'participant2']);
+      console.log('Match 2 créé :', match2.participant1.Name, 'vs', match2.participant2.Name);
+      console.log('   Statut:', match2.status, '| Date:', match2.date_debut.toLocaleString());
+    } else {
+      console.log('Match 2 déjà existant');
+    }
+
     // ======================
     // 9. PARTIES
     // ======================
     console.log('\nTest Parties...');
     
     // Partie 1
-    let partie1 = await Partie.findOne({ 
+    partie1 = await Partie.findOne({ 
       match: match._id,
       map: 'Dust II'
     });
@@ -288,7 +406,7 @@ async function testInsert() {
     }
 
     // Partie 2
-    let partie2 = await Partie.findOne({ 
+    partie2 = await Partie.findOne({ 
       match: match._id,
       map: 'Mirage'
     });
@@ -309,7 +427,7 @@ async function testInsert() {
     }
 
     // Partie 3 (décisive)
-    let partie3 = await Partie.findOne({ 
+    partie3 = await Partie.findOne({ 
       match: match._id,
       map: 'Inferno'
     });
@@ -335,7 +453,7 @@ async function testInsert() {
     console.log('\nTest Inscriptions...');
     
     // Inscription équipe 1
-    let inscription1 = await Inscription.findOne({ 
+    inscription1 = await Inscription.findOne({ 
       tournoi: tournoi._id,
       equipe: equipe1._id
     });
@@ -359,7 +477,7 @@ async function testInsert() {
     }
 
     // Inscription équipe 2
-    let inscription2 = await Inscription.findOne({ 
+    inscription2 = await Inscription.findOne({ 
       tournoi: tournoi._id,
       equipe: equipe2._id
     });
@@ -388,7 +506,7 @@ async function testInsert() {
     console.log('\nTest Streams...');
 
     // Stream 1 pour partie 1
-    let stream1 = await Stream.findOne({ 
+    stream1 = await Stream.findOne({ 
       partie: partie1._id,
       plateforme: 'Twitch'
     });
@@ -409,7 +527,7 @@ async function testInsert() {
     }
 
     // Stream 2 pour partie 2
-    let stream2 = await Stream.findOne({ 
+    stream2 = await Stream.findOne({ 
       partie: partie2._id,
       plateforme: 'YouTube'
     });
@@ -430,7 +548,7 @@ async function testInsert() {
     }
 
     // Stream 3 pour partie 3 (en direct)
-    let stream3 = await Stream.findOne({ 
+    stream3 = await Stream.findOne({ 
       partie: partie3._id,
       plateforme: 'Twitch'
     });

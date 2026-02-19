@@ -22,49 +22,40 @@ const validateLogo = (logo) => {
 // Créer une équipe
 exports.createEquipe = async (req, res) => {
   try {
-    const { Name, logo, description, jeu_principal } = req.body;
+    const { Name, description, jeu_principal } = req.body;
 
     if (!Name) {
-      return res.status(400).json({ message: 'Le nom de l\'équipe est requis' });
+      return res.status(400).json({ message: "Nom requis" });
     }
 
-    // Valider le logo si fourni
-    const logoError = validateLogo(logo);
-    if (logoError) {
-      return res.status(400).json({ message: logoError });
-    }
-
-    const equipeExists = await Equipe.findOne({ Name });
-    if (equipeExists) {
-      return res.status(400).json({ message: 'Une équipe avec ce nom existe déjà' });
+    const exists = await Equipe.findOne({ Name });
+    if (exists) {
+      return res.status(400).json({ message: "Nom déjà utilisé" });
     }
 
     if (jeu_principal) {
-      const jeuExists = await Jeu.findById(jeu_principal);
-      if (!jeuExists) {
-        return res.status(404).json({ message: 'Jeu non trouvé' });
-      }
+      const jeu = await Jeu.findById(jeu_principal);
+      if (!jeu) return res.status(404).json({ message: "Jeu introuvable" });
     }
 
     const equipe = new Equipe({
       Name,
-      logo: logo || null,
       description,
       jeu_principal,
+      logo: req.file ? `/uploads/logos/${req.file.filename}` : null,
       capitaine: req.user.id,
-      membres: [req.user.id]
+      membres: [req.user.id],
     });
 
     await equipe.save();
-    await equipe.populate('capitaine', '-Password');
-    await equipe.populate('membres', '-Password');
-    await equipe.populate('jeu_principal');
+    await equipe.populate('capitaine membres jeu_principal');
 
     res.status(201).json(equipe);
-  } catch (error) {
-    res.status(500).json({ message: 'Erreur lors de la création de l\'équipe', error: error.message });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
+
 
 // Obtenir toutes les équipes
 exports.getAllEquipes = async (req, res) => {
