@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const getStatutColor = (statut) => {
   if (statut === 'en cours') return 'text-yellow-300';
@@ -10,6 +10,7 @@ const getStatutColor = (statut) => {
 export default function TournoiCard({ tournoi }) {
   const inscrits = tournoi.inscriptions?.length ?? 0;
   const plein = inscrits >= tournoi.nombre_equipes_max;
+  const navigate = useNavigate();
 
   return (
     <Link key={tournoi._id} to={`/tournois/${tournoi._id}`} className="block group">
@@ -82,20 +83,20 @@ export default function TournoiCard({ tournoi }) {
             </div>
           ) : (
             <div className="flex flex-col gap-1">
-              <Link
-                to={`/inscription/tournois/${tournoi._id}`}
-                onClick={(e) => e.stopPropagation()}
+              <button
+                onClick={(e) => { e.stopPropagation(); navigate(`/inscription/tournois/${tournoi._id}`); }}
                 className="w-full py-3 bg-yellow-400 hover:bg-yellow-300
                            text-green-900 font-bold text-sm rounded-xl text-center
                            transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]
                            flex items-center justify-center gap-2"
+                type="button"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                     d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                 </svg>
                 S&apos;inscrire
-              </Link>
+              </button>
               <p className="text-green-300 text-xs text-center">
                 {tournoi.nombre_equipes_max - inscrits} place{tournoi.nombre_equipes_max - inscrits > 1 ? 's' : ''} restante{tournoi.nombre_equipes_max - inscrits > 1 ? 's' : ''}
               </p>

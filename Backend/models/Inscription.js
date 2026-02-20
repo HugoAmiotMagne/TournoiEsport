@@ -17,7 +17,11 @@ inscriptionSchema.index({ tournoi: 1, equipe: 1 }, { unique: true });
 // Validation : vérifier que la date limite n'est pas dépassée
 inscriptionSchema.pre('save', function(next) {
   if (this.date_limite && new Date() > this.date_limite) {
-    next(new Error('La date limite d\'inscription est dépassée'));
+    // Si l'inscription est encore en attente, la refuser automatiquement
+    if (!this.statut || this.statut === 'en_attente') {
+      this.statut = 'refusee';
+    }
+    return next();
   }
   next();
 });

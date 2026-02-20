@@ -25,9 +25,23 @@ const statusBadgeBg = (status) => {
   return '';
 };
 
+const TeamAvatar = ({ equipe }) => {
+  return equipe?.logo ? (
+    <img
+      src={equipe.logo}
+      alt={equipe.Name}
+      className="w-10 h-10 rounded-full object-cover border-2 border-yellow-400 mx-auto mb-2"
+    />
+  ) : (
+    <div className="w-10 h-10 rounded-full bg-green-600 border-2 border-yellow-400 flex items-center justify-center mx-auto mb-2 text-lg font-bold">
+      {(equipe?.Name ?? '?')[0].toUpperCase()}
+    </div>
+  );
+};
+
 export default function MatchCard({ match }) {
   return (
-    <Link to={`/matchs/${match._id}`} className="block group">
+    <Link to={`/match/${match._id}`} className="block group">
       <div
         className="bg-gradient-to-br from-green-600 to-green-700 shadow-lg p-6 sm:p-8 text-white
                    group-hover:shadow-2xl group-hover:scale-[1.02] transition-all duration-300 h-full flex flex-col"
@@ -61,29 +75,38 @@ export default function MatchCard({ match }) {
           }}
         >
           <div className="flex items-center justify-between gap-3">
+            {/* Participant 1 */}
             <div className="flex-1 text-center">
-              <div className="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center mx-auto mb-2 text-lg font-bold">
-                {match.participant1?.nom?.[0]?.toUpperCase() ?? '?'}
-              </div>
+              <TeamAvatar equipe={match.participant1} />
               <p className="font-bold text-sm sm:text-base leading-tight">
-                {match.participant1?.nom ?? 'Équipe 1'}
+                {match.participant1?.Name ?? 'Équipe 1'}
               </p>
+              {match.participant1?.membres && (
+                <p className="text-green-300 text-xs mt-0.5">
+                  {match.participant1.membres.length} membre{match.participant1.membres.length > 1 ? 's' : ''}
+                </p>
+              )}
             </div>
 
+            {/* VS + score */}
             <div className="flex flex-col items-center flex-shrink-0">
               <span className="text-yellow-300 font-black text-xl sm:text-2xl">VS</span>
-              {match.status === 'termine' && match.score && (
+              {normalizeStatus(match.status) === 'termine' && match.score && (
                 <span className="text-white font-bold text-sm mt-1">{match.score}</span>
               )}
             </div>
 
+            {/* Participant 2 */}
             <div className="flex-1 text-center">
-              <div className="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center mx-auto mb-2 text-lg font-bold">
-                {match.participant2?.nom?.[0]?.toUpperCase() ?? '?'}
-              </div>
+              <TeamAvatar equipe={match.participant2} />
               <p className="font-bold text-sm sm:text-base leading-tight">
-                {match.participant2?.nom ?? 'Équipe 2'}
+                {match.participant2?.Name ?? 'Équipe 2'}
               </p>
+              {match.participant2?.membres && (
+                <p className="text-green-300 text-xs mt-0.5">
+                  {match.participant2.membres.length} membre{match.participant2.membres.length > 1 ? 's' : ''}
+                </p>
+              )}
             </div>
           </div>
         </div>

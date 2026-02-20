@@ -3,10 +3,12 @@ import { getTournois } from '../services/api';
 import TournoiCard from '../Components/Card/TournoiCard';
 import BarreRecherche from '../Components/Recherche/BarreRecherche';
 
+const STATUT_ORDER = { 'en cours': 0, 'à venir': 1, 'terminé': 2, 'annulé': 3 };
+
 export default function Tournois() {
   const [tournois, setTournois] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -15,11 +17,9 @@ export default function Tournois() {
       .catch(err => { setError(err.message); setLoading(false); });
   }, []);
 
-  const tournoisFiltres = tournois.filter((t) =>
-    t.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    t.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    t.statut.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const tournoisFiltres = tournois
+    .filter((t) => t.Name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a, b) => (STATUT_ORDER[a.statut] ?? 99) - (STATUT_ORDER[b.statut] ?? 99));
 
   if (loading) return (
     <div className="min-h-screen bg-[#E8F5A8] flex items-center justify-center">
@@ -51,8 +51,8 @@ export default function Tournois() {
       <BarreRecherche
         value={searchTerm}
         onChange={setSearchTerm}
-        placeholder="Rechercher par nom, description ou statut..."
-        resultCount={tournoisFiltres.length}
+        placeholder="Rechercher un tournoi..."
+        resultCount={searchTerm ? tournoisFiltres.length : undefined}
       />
 
       {/* Grille */}

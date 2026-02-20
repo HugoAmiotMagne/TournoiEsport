@@ -62,6 +62,17 @@ exports.getAllTournois = async (req, res) => {
       .populate('jeu')
       .populate('salle')
       .populate('createur', '-Password')
+      .populate({
+        path: 'inscriptions',
+        populate: { path: 'equipe', select: 'Name logo' }
+      })
+      .populate({
+        path: 'matchs',
+        populate: [
+          { path: 'participant1', select: 'Name logo' },
+          { path: 'participant2', select: 'Name logo' }
+        ]
+      })
       .sort({ date_debut: -1 });
     res.status(200).json(tournois);
   } catch (error) {
@@ -75,7 +86,18 @@ exports.getTournoiById = async (req, res) => {
     const tournoi = await Tournoi.findById(req.params.id)
       .populate('jeu')
       .populate('salle')
-      .populate('createur', '-Password');
+      .populate('createur', '-Password')
+      .populate({
+        path: 'inscriptions',
+        populate: { path: 'equipe', select: 'Name logo' }
+      })
+      .populate({
+        path: 'matchs',
+        populate: [
+          { path: 'participant1', select: 'Name logo' },
+          { path: 'participant2', select: 'Name logo' }
+        ]
+      });
     
     if (!tournoi) {
       return res.status(404).json({ message: 'Tournoi non trouvé' });

@@ -11,18 +11,13 @@ const normalizeStatus = (status) => {
     .replace(/\s+/g, '_');
 };
 
-const statusLabel = {
-  en_attente: 'En attente',
-  en_cours:   'En cours',
-  termine:    'Terminé',
-  annule:     'Annulé',
-};
+const trieStatut = { en_cours: 0, en_attente: 1, termine: 2, annule: 3 };
 
 export default function Match() {
-  const [matchs, setMatchs]             = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [error, setError]               = useState(null);
-  const [searchTerm, setSearchTerm]     = useState('');
+  const [matchs, setMatchs]         = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [error, setError]           = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     getMatchs()
@@ -30,28 +25,22 @@ export default function Match() {
       .catch(err => { setError(err.message); setLoading(false); });
   }, []);
 
-  const matchsFiltres = matchs.filter((match) => {
-    const equipe1 = match.participant1?.nom?.toLowerCase() ?? '';
-    const equipe2 = match.participant2?.nom?.toLowerCase() ?? '';
-    const tournoi = match.tournoi?.Name?.toLowerCase() ?? '';
-    const term    = searchTerm.toLowerCase();
+  const matchsFiltres = matchs
+    .filter((match) =>
+      (match.Name ?? '').toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      const orderA = trieStatut[normalizeStatus(a.status)] ?? 99;
+      const orderB = trieStatut[normalizeStatus(b.status)] ?? 99;
+      return orderA - orderB;
+    });
 
-    return (
-      equipe1.includes(term) ||
-      equipe2.includes(term) ||
-      tournoi.includes(term) ||
-      statusLabel[normalizeStatus(match.status)]?.toLowerCase().includes(term)
-    );
-  });
-
-  // Affichage chargement
   if (loading) return (
     <div className="min-h-screen bg-[#E8F5A8] flex items-center justify-center">
       <p className="text-gray-800 text-xl font-semibold">Chargement...</p>
     </div>
   );
 
-  // Affichage erreur
   if (error) return (
     <div className="min-h-screen bg-[#E8F5A8] flex items-center justify-center">
       <p className="text-red-600 text-xl">Erreur : {error}</p>
@@ -60,7 +49,7 @@ export default function Match() {
 
   return (
     <div className="min-h-screen bg-[#E8F5A8] w-full">
-      
+
       {/* Bannière */}
       <div className="w-full bg-gradient-to-br from-green-600 to-green-700 py-12 sm:py-16 px-4 sm:px-8 text-center">
         <p className="text-gray-800 text-sm font-medium mb-2">
@@ -81,7 +70,7 @@ export default function Match() {
       <BarreRecherche
         value={searchTerm}
         onChange={setSearchTerm}
-        placeholder="Rechercher une équipe, un tournoi..."
+        placeholder="Rechercher un match..."
         resultCount={searchTerm ? matchsFiltres.length : undefined}
       />
 

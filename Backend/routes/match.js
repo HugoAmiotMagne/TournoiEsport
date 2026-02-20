@@ -14,7 +14,7 @@ const auth = require('../middleware/auth');
 
 /**
  * @swagger
- * /api/matches:
+ * /api/match:
  *   get:
  *     summary: Récupérer tous les matchs
  *     tags: [Matchs]
@@ -26,7 +26,25 @@ router.get('/', matchController.getAllMatches);
 
 /**
  * @swagger
- * /api/matches/tournoi/{tournoiId}:
+ * /api/match/tournois/{id}:
+ *   get:
+ *     summary: Récupérer les matchs d'un tournoi
+ *     tags: [Matchs]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Matchs du tournoi
+ */
+router.get('/match/:id', matchController.getMatchesByTournoi);
+
+/**
+ * @swagger
+ * /api/match/tournois/{tournoiId}:
  *   get:
  *     summary: Récupérer les matchs d'un tournoi
  *     tags: [Matchs]
@@ -40,11 +58,11 @@ router.get('/', matchController.getAllMatches);
  *       200:
  *         description: Matchs du tournoi
  */
-router.get('/tournoi/:tournoiId', matchController.getMatchesByTournoi);
+router.get('/tournois/:tournoiId', matchController.getMatchesByTournoi);
 
 /**
  * @swagger
- * /api/matches/equipe/{equipeId}:
+ * /api/match/equipe/{equipeId}:
  *   get:
  *     summary: Récupérer les matchs d'une équipe
  *     tags: [Matchs]
@@ -62,7 +80,7 @@ router.get('/equipe/:equipeId', matchController.getMatchesByEquipe);
 
 /**
  * @swagger
- * /api/matches/{id}:
+ * /api/match/{id}:
  *   get:
  *     summary: Récupérer un match par ID
  *     tags: [Matchs]
@@ -84,7 +102,7 @@ router.get('/:id', matchController.getMatchById);
 
 /**
  * @swagger
- * /api/matches:
+ * /api/match:
  *   post:
  *     summary: Créer un match
  *     tags: [Matchs]
@@ -106,7 +124,7 @@ router.post('/', auth, matchController.createMatch);
 
 /**
  * @swagger
- * /api/matches/{id}:
+ * /api/match/{id}:
  *   put:
  *     summary: Mettre à jour un match
  *     tags: [Matchs]
@@ -134,7 +152,7 @@ router.put('/:id', auth, matchController.updateMatch);
 
 /**
  * @swagger
- * /api/matches/{id}:
+ * /api/match/{id}:
  *   delete:
  *     summary: Supprimer un match
  *     tags: [Matchs]

@@ -153,7 +153,7 @@ async function testInsert() {
           plateforme: 'PC',
           min_joueur: 2,
           max_joueur: 10,
-          image: 'https://example.com/valorant.png'
+          image: 'https://tse1.mm.bing.net/th/id/OIP.QYvwdFIinVUthaFNj4njkwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3'
         });
         jeu2 = res.doc;
         console.log(res.created ? 'Jeu 2 créé :' : 'Jeu 2 déjà existant :', jeu2.Name);
@@ -282,6 +282,46 @@ async function testInsert() {
       console.log('Tournoi 2 déjà existant');
     }
 
+    // Tournoi 3 - Annulé
+    let tournoi3 = await Tournoi.findOne({ Name: 'Tournoi Annulé 2026' });
+    if (!tournoi3) {
+      tournoi3 = new Tournoi({
+        Name: 'Tournoi Annulé 2026',
+        description: 'Événement annulé pour raisons logistiques',
+        date_debut: new Date('2026-02-01'),
+        date_fin: new Date('2026-02-02'),
+        jeu: jeu._id,
+        salle: salle._id,
+        statut: 'annulé',
+        prix_inscription: 20,
+        nombre_equipes_max: 8
+      });
+      await tournoi3.save();
+      console.log('Tournoi 3 (annulé) créé :', tournoi3.Name);
+    } else {
+      console.log('Tournoi 3 déjà existant');
+    }
+
+    // Tournoi 4 - Terminé (avec matchs et parties déjà joués)
+    let tournoi4 = await Tournoi.findOne({ Name: 'Tournoi Terminé 2025' });
+    if (!tournoi4) {
+      tournoi4 = new Tournoi({
+        Name: 'Tournoi Terminé 2025',
+        description: 'Edition passée avec résultats finalisés',
+        date_debut: new Date('2025-11-10'),
+        date_fin: new Date('2025-11-12'),
+        jeu: jeu._id,
+        salle: salle._id,
+        statut: 'terminé',
+        prix_inscription: 25,
+        nombre_equipes_max: 8
+      });
+      await tournoi4.save();
+      console.log('Tournoi 4 (terminé) créé :', tournoi4.Name);
+    } else {
+      console.log('Tournoi 4 déjà existant');
+    }
+
 
     // ======================
     // 7. BILLET
@@ -378,6 +418,62 @@ async function testInsert() {
     } else {
       console.log('Match 2 déjà existant');
     }
+
+    // ======================
+    // 8bis. MATCHES pour autres tournois
+    // ======================
+    // Matches pour tournoi2 (Valorant)
+    let matchV1 = await Match.findOne({ tournoi: tournoi2._id, participant1: equipe1._id, participant2: equipe3._id });
+    if (!matchV1) {
+      matchV1 = new Match({
+        date_debut: new Date('2026-04-10T10:00:00'),
+        status: 'en_attente',
+        tournoi: tournoi2._id,
+        participant1: equipe1._id,
+        participant2: equipe3._id
+      });
+      await matchV1.save();
+      console.log('Match Valorant créé :', equipe1.Name, 'vs', equipe3.Name);
+    }
+
+    // Matches pour tournoi4 (terminé) - résultats enregistrés
+    let matchT1 = await Match.findOne({ tournoi: tournoi4._id, participant1: equipe1._id, participant2: equipe2._id });
+    if (!matchT1) {
+      matchT1 = new Match({
+        date_debut: new Date('2025-11-10T14:00:00'),
+        status: 'termine',
+        tournoi: tournoi4._id,
+        participant1: equipe1._id,
+        participant2: equipe2._id
+      });
+      await matchT1.save();
+      console.log('Match (terminé) créé :', equipe1.Name, 'vs', equipe2.Name);
+
+      // Ajouter parties pour matchT1
+      const pA = new Partie({
+        score: '16-8',
+        map: 'Dust II',
+        duree: 35,
+        date_debut: new Date('2025-11-10T14:00:00'),
+        date_fin: new Date('2025-11-10T14:35:00'),
+        match: matchT1._id
+      });
+      await pA.save();
+
+      const pB = new Partie({
+        score: '12-16',
+        map: 'Inferno',
+        duree: 40,
+        date_debut: new Date('2025-11-10T15:00:00'),
+        date_fin: new Date('2025-11-10T15:40:00'),
+        match: matchT1._id
+      });
+      await pB.save();
+
+      console.log('Parties pour match terminé ajoutées');
+    }
+
+    // Aucun match pour tournoi3 (annulé)
 
     // ======================
     // 9. PARTIES
@@ -498,6 +594,59 @@ async function testInsert() {
       console.log('   Statut:', inscription2.statut, '| Classement:', inscription2.classement);
     } else {
       console.log('Inscription 2 déjà existante');
+    }
+
+    // Inscription équipe 3 sur tournoi2 (Valorant)
+    let inscription3 = await Inscription.findOne({ tournoi: tournoi2._id, equipe: equipe3._id });
+    if (!inscription3) {
+      inscription3 = new Inscription({
+        date_limite: new Date('2026-03-30'),
+        statut: 'acceptee',
+        classement: 3,
+        tournoi: tournoi2._id,
+        equipe: equipe3._id,
+        prix_paye: 30,
+        date_inscription: new Date('2026-02-01'),
+        commentaire: 'Inscription pour Valorant'
+      });
+      await inscription3.save();
+      await inscription3.populate(['tournoi', 'equipe']);
+      console.log('Inscription 3 créée :', inscription3.equipe.Name, '→', inscription3.tournoi.Name);
+    } else {
+      console.log('Inscription 3 déjà existante');
+    }
+
+    // Inscriptions pour tournoi4 (terminé)
+    let inscrT1 = await Inscription.findOne({ tournoi: tournoi4._id, equipe: equipe1._id });
+    if (!inscrT1) {
+      inscrT1 = new Inscription({
+        date_limite: new Date('2025-10-01'),
+        statut: 'acceptee',
+        classement: 1,
+        tournoi: tournoi4._id,
+        equipe: equipe1._id,
+        prix_paye: 25,
+        date_inscription: new Date('2025-09-10'),
+        commentaire: 'Champion 2025'
+      });
+      await inscrT1.save();
+      console.log('Inscription tournoi4 créée pour', equipe1.Name);
+    }
+
+    let inscrT2 = await Inscription.findOne({ tournoi: tournoi4._id, equipe: equipe2._id });
+    if (!inscrT2) {
+      inscrT2 = new Inscription({
+        date_limite: new Date('2025-10-01'),
+        statut: 'acceptee',
+        classement: 2,
+        tournoi: tournoi4._id,
+        equipe: equipe2._id,
+        prix_paye: 25,
+        date_inscription: new Date('2025-09-12'),
+        commentaire: 'Finaliste'
+      });
+      await inscrT2.save();
+      console.log('Inscription tournoi4 créée pour', equipe2.Name);
     }
 
     // ======================

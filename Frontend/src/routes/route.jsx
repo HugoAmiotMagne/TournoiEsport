@@ -12,9 +12,12 @@ import Tournois from "../pages/Tournois";
 import Match from "../pages/Match";
 import Teams from "../pages/Teams";
 import Error404 from "../pages/ErrorPage";
-import TournoiId from "../pages/TournoisId";
 import Inscription from "../pages/Inscription";
 import NewTeam from "../pages/NewTeams";
+import TournoiId from "../pages/TournoisId";
+import TeamsId from "../pages/TeamsId";
+import MatchId from "../pages/MatchId";
+
 
 const router = createBrowserRouter([
   {
@@ -59,15 +62,19 @@ const router = createBrowserRouter([
         element: <Match />
       },
       {
+        path: "/match/:id",
+        element: <MatchId />
+      },
+      {
         path: "/teams",
         element: <Teams />
       },
       {
-        path: "/teams/new",
-        element: <NewTeam />
+        path: "/teams/:id",
+        element: <TeamsId />
       },
       {
-        path: "/equipes/new",
+        path: "/teams/new",
         element: <NewTeam />
       },
       {

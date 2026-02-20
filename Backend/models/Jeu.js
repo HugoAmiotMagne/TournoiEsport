@@ -12,13 +12,13 @@ const jeuSchema = new mongoose.Schema({
     validate: {
       validator: function (v) {
         if (!v) return true;
-        // Accept data URI base64 image OR http(s) URL to an image file
+        // Accept data URI base64 image OR http(s) URL to an image file OR local uploads path
         const isDataUri = /^data:image\/(jpeg|jpg|png|gif|webp);base64,/.test(v);
-        // Accept any http(s) URL as image (CDN URLs may not include a file extension)
         const isUrl = /^https?:\/\/.+/i.test(v);
-        return isDataUri || isUrl;
+        const isLocalUpload = /^\/?uploads\/.+/i.test(v) || /^\/uploads\/.+/i.test(v);
+        return isDataUri || isUrl || isLocalUpload;
       },
-      message: "L'image doit être une image Base64 (jpeg, png, gif, webp) ou une URL d'image (http(s)://...)"
+      message: "L'image doit être une image Base64 (jpeg, png, gif, webp), une URL (http(s)://...) ou un chemin local d'upload (/uploads/...)"
     }
   },
 }, { timestamps: true });

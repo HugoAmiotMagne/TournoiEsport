@@ -124,7 +124,8 @@ exports.getMyEquipe = async (req, res) => {
 // Mettre à jour une équipe
 exports.updateEquipe = async (req, res) => {
   try {
-    const { Name, logo, description, jeu_principal } = req.body;
+    const { Name, logo: logoFromBody, description, jeu_principal } = req.body;
+    const file = req.file;
 
     const equipe = await Equipe.findById(req.params.id);
     if (!equipe) {
@@ -142,12 +143,16 @@ exports.updateEquipe = async (req, res) => {
       }
     }
 
-    // Valider le logo si fourni
-    if (logo !== undefined) {
-      const logoError = validateLogo(logo);
+    // Déterminer le logo à appliquer : priorité au fichier (req.file)
+    let logoToSet;
+    if (file) {
+      logoToSet = `/uploads/logos/${file.filename}`;
+    } else if (logoFromBody !== undefined) {
+      const logoError = validateLogo(logoFromBody);
       if (logoError) {
         return res.status(400).json({ message: logoError });
       }
+      logoToSet = logoFromBody || null;
     }
 
     if (jeu_principal) {
@@ -161,7 +166,7 @@ exports.updateEquipe = async (req, res) => {
       req.params.id,
       {
         ...(Name        && { Name }),
-        ...(logo !== undefined && { logo: logo || null }),
+        ...(logoToSet !== undefined && { logo: logoToSet }),
         ...(description !== undefined && { description }),
         ...(jeu_principal && { jeu_principal }),
       },

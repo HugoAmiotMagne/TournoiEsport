@@ -88,7 +88,7 @@ export const getMatchs = async () => {
 };
 
 export const getMatchById = async (id) => {
-  const res = await fetch(`${API_BASE_URL}/matchs/${id}`);
+  const res = await fetch(`${API_BASE_URL}/match/${id}`);
   if (!res.ok) throw new Error('Match introuvable');
   return res.json();
 };

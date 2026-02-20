@@ -25,7 +25,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row md:justify-between gap-10">
           {/* Brand section */}
           <div className="flex flex-col gap-4 max-w-xs">
-            <h2 className="text-[#c8a832] font-bold text-2xl tracking-wide">
+            <h2 className="text-yellow-300 font-bold text-2xl tracking-wide">
               Game Bar Hub
             </h2>
             <p className="text-white/80 text-sm leading-relaxed">
@@ -35,14 +35,14 @@ const Footer = () => {
               <a
                 href="#"
                 aria-label="Instagram"
-                className="text-[#c8a832] hover:text-white transition-colors duration-200"
+                className="text-yellow-300 hover:text-white transition-colors duration-200"
               >
                 <InstagramIcon />
               </a>
               <a
                 href="#"
                 aria-label="Twitter / X"
-                className="text-[#c8a832] hover:text-white transition-colors duration-200"
+                className="text-yellow-300 hover:text-white transition-colors duration-200"
               >
                 <XIcon />
               </a>
@@ -51,64 +51,60 @@ const Footer = () => {
 
           {/* Links section */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
-            {/* Features */}
+            {/* Navigation */}
             <div>
-              <h3 className="text-[#c8a832] font-semibold text-sm mb-4 uppercase tracking-wider">
-                Features
+              <h3 className="text-yellow-300 font-semibold text-sm mb-4 uppercase tracking-wider">
+                Navigation
               </h3>
               <ul className="flex flex-col gap-2 text-sm text-white/80">
-                {["Core features", "Pro experience", "Integrations"].map(
-                  (item) => (
-                    <li key={item}>
-                      <a
-                        href="#"
-                        className="hover:text-white transition-colors duration-200"
-                      >
-                        {item}
-                      </a>
-                    </li>
-                  )
-                )}
+                <li>
+                  <Link to="/" className="hover:text-white transition-colors duration-200">Accueil</Link>
+                </li>
+                <li>
+                  <Link to="/tournois" className="hover:text-white transition-colors duration-200">Tournois</Link>
+                </li>
+                <li>
+                  <Link to="/jeux" className="hover:text-white transition-colors duration-200">Jeux</Link>
+                </li>
+                <li>
+                  <Link to="/teams" className="hover:text-white transition-colors duration-200">Équipes</Link>
+                </li>
               </ul>
             </div>
 
-            {/* Learn more */}
+            {/* Billetterie & Médias */}
             <div>
-              <h3 className="text-[#c8a832] font-semibold text-sm mb-4 uppercase tracking-wider">
-                Learn more
+              <h3 className="text-yellow-300 font-semibold text-sm mb-4 uppercase tracking-wider">
+                Billetterie & Médias
               </h3>
               <ul className="flex flex-col gap-2 text-sm text-white/80">
-                {["Blog", "Case studies", "Customer stories", "Best practices"].map(
-                  (item) => (
-                    <li key={item}>
-                      <a
-                        href="#"
-                        className="hover:text-white transition-colors duration-200"
-                      >
-                        {item}
-                      </a>
-                    </li>
-                  )
-                )}
+                <li>
+                  <Link to="/billetterie" className="hover:text-white transition-colors duration-200">Billetterie</Link>
+                </li>
+                <li>
+                  <Link to="/streams" className="hover:text-white transition-colors duration-200">Streams</Link>
+                </li>
+                <li>
+                  <Link to="/matchs" className="hover:text-white transition-colors duration-200">Matchs</Link>
+                </li>
               </ul>
             </div>
 
             {/* Support */}
             <div>
-              <h3 className="text-[#c8a832] font-semibold text-sm mb-4 uppercase tracking-wider">
-                Support
+              <h3 className="text-yellow-300 font-semibold text-sm mb-4 uppercase tracking-wider">
+                Assistance
               </h3>
               <ul className="flex flex-col gap-2 text-sm text-white/80">
-                {["Contact", "Support", "Legal"].map((item) => (
-                  <li key={item}>
-                    <a
-                      href="#"
-                      className="hover:text-white transition-colors duration-200"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ))}
+                <li>
+                  <Link to="/contact" className="hover:text-white transition-colors duration-200">Contact</Link>
+                </li>
+                <li>
+                  <Link to="/aide" className="hover:text-white transition-colors duration-200">Aide</Link>
+                </li>
+                <li>
+                  <Link to="/legal" className="hover:text-white transition-colors duration-200">Mentions légales</Link>
+                </li>
               </ul>
             </div>
           </div>
@@ -116,7 +112,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom accent bar */}
-      <div className="h-1 bg-[#c8a832] w-full" />
+      <div className="h-1 bg-yellow-300 w-full" />
     </footer>
   );
 };

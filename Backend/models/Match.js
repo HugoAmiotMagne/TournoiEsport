@@ -12,9 +12,10 @@ const matchSchema = new mongoose.Schema({
 // Validation pour s'assurer que participant1 et participant2 sont différents
 matchSchema.pre('save', function(next) {
   if (this.participant1.toString() === this.participant2.toString()) {
-    next(new Error('Les deux participants doivent être différents'));
+    return next(new Error('Les deux participants doivent être différents'));
   }
   next();
 });
 
-module.exports = mongoose.model('Match', matchSchema);
+// Utiliser la collection existante 'matches' pour rester compatible avec la base actuelle
+module.exports = mongoose.model('Match', matchSchema, 'matches');

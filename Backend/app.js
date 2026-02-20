@@ -53,6 +53,8 @@ app.use('/api/equipes', equipeRoutes);
 app.use('/api/billets', billetRoutes); 
 app.use('/api/parties', PartieRoutes); 
 app.use('/api/matches', MatchRoutes); 
+// Alias singulier pour compatibilité front existant
+app.use('/api/match', MatchRoutes);
 app.use('/api/streams', StreamRoutes); 
 app.use('/api/inscriptions', InscriptionRoutes); 
 app.use('/api/membreteams', MembreTeamRoutes); 

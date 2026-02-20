@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jeuController = require('../controllers/jeu');
 const auth = require('../middleware/auth');
+const uploadImage = require('../middleware/uploadImage');
 
 /**
  * @swagger
@@ -94,7 +95,7 @@ router.get('/:id', jeuController.getJeuById);
  *       401:
  *         description: Non autorisé
  */
-router.post('/', auth, jeuController.createJeu);
+router.post('/', auth, uploadImage, jeuController.createJeu);
 
 /**
  * @swagger
@@ -122,7 +123,7 @@ router.post('/', auth, jeuController.createJeu);
  *       401:
  *         description: Non autorisé
  */
-router.put('/:id', auth, jeuController.updateJeu);
+router.put('/:id', auth, uploadImage, jeuController.updateJeu);
 
 /**
  * @swagger

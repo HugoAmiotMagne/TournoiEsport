@@ -78,7 +78,6 @@ export default function TeamCard({ equipe }) {
           </div>
           {equipe.jeu_principal && (
             <div className="col-span-2 bg-green-700 p-3 rounded-xl flex items-center gap-2">
-              <span className="text-yellow-300 text-sm">🎮</span>
               <div>
                 <p className="text-green-200 text-xs">Jeu principal</p>
                 <p className="text-sm font-semibold">

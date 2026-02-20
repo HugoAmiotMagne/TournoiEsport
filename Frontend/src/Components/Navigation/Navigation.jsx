@@ -8,9 +8,10 @@ export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin     = () => { navigate('/login');    setIsMenuOpen(false); };
-  const handleRegister  = () => { navigate('/register'); setIsMenuOpen(false); };
-  const handleLogout    = () => { setIsLoggedIn(false);  navigate('/'); setIsMenuOpen(false); };
+  const Login     = () => { navigate('/login');    setIsMenuOpen(false); };
+  const Register  = () => { navigate('/register'); setIsMenuOpen(false); };
+  const Profil         = () => { navigate('/profil');   setIsMenuOpen(false); };
+  const Logout    = () => { setIsLoggedIn(false);  navigate('/'); setIsMenuOpen(false); };
 
   return (
     <header className="bg-[#E8F5A8] shadow-2xl w-full sticky top-0 z-50">
@@ -37,11 +38,14 @@ export default function Navigation() {
             <NavLinks />
             {!isLoggedIn ? (
               <>
-                <Bouton onClick={handleLogin}>Connexion</Bouton>
-                <Bouton onClick={handleRegister}>Inscription</Bouton>
+                <Bouton onClick={Login}>Connexion</Bouton>
+                <Bouton onClick={Register}>Inscription</Bouton>
               </>
             ) : (
-              <Bouton onClick={handleLogout} color="red">Déconnexion</Bouton>
+              <>
+                <Bouton onClick={Profil}>Profil</Bouton>
+                <Bouton onClick={Logout} color="red" full>Déconnexion</Bouton>
+              </>
             )}
           </div>
         </div>
@@ -52,11 +56,14 @@ export default function Navigation() {
             <NavLinks mobile onClick={() => setIsMenuOpen(false)} />
             {!isLoggedIn ? (
               <>
-                <Bouton onClick={handleLogin} full>Connexion</Bouton>
-                <Bouton onClick={handleRegister} full>Inscription</Bouton>
+                <Bouton onClick={Login} full>Connexion</Bouton>
+                <Bouton onClick={Register} full>Inscription</Bouton>
               </>
             ) : (
-              <Bouton onClick={handleLogout} color="red" full>Déconnexion</Bouton>
+              <>
+                <Bouton onClick={Profil} color="green" full>Profil</Bouton>
+                <Bouton onClick={Logout} color="red" full>Déconnexion</Bouton>
+              </>
             )}
           </div>
         )}

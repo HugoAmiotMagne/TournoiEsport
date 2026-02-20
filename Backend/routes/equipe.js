@@ -16,9 +16,9 @@ router.get('/',             equipeController.getAllEquipes);
 
 // ── Routes protégées ──
 
-router.post('/new', auth, upload.single('logo'), equipeController.createEquipe);
+router.post('/new', auth, upload, equipeController.createEquipe);
 
-router.put('/:id', auth, upload.single('logo'), equipeController.updateEquipe);
+router.put('/:id', auth, upload, equipeController.updateEquipe);
 
 router.post('/:id/quitter', auth, equipeController.quitterEquipe);
 

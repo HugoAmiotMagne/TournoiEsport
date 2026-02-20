@@ -11,7 +11,6 @@ const slides = [
   { src: slide3, alt: "Slide 3" },
 ];
 
-// ── Horaires par jour (modifie ici selon tes besoins) ──
 const horaires = [
   { jour: "Lundi",    heures: "14h – 00h" },
   { jour: "Mardi",    heures: "14h – 00h" },
@@ -22,12 +21,9 @@ const horaires = [
   { jour: "Dimanche", heures: "10h – 00h" },
 ];
 
-// ── Composant Slider ──
 function ImageSlider() {
   const [current, setCurrent] = useState(0);
 
-  const prev = useCallback(() =>
-    setCurrent((c) => (c - 1 + slides.length) % slides.length), []);
   const next = useCallback(() =>
     setCurrent((c) => (c + 1) % slides.length), []);
 
@@ -53,28 +49,6 @@ function ImageSlider() {
         ))}
       </div>
 
-      {/* Flèche gauche */}
-      <button
-        onClick={prev}
-        className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full w-9 h-9 flex items-center justify-center transition-colors duration-200 z-10"
-        aria-label="Image précédente"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-
-      {/* Flèche droite */}
-      <button
-        onClick={next}
-        className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full w-9 h-9 flex items-center justify-center transition-colors duration-200 z-10"
-        aria-label="Image suivante"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-
       {/* Dots */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
         {slides.map((_, i) => (
@@ -92,7 +66,6 @@ function ImageSlider() {
   );
 }
 
-// ── Page principale ──
 function Home() {
   const [prochainsTournois, setProchainsTournois] = useState([]);
 
@@ -196,7 +169,7 @@ function Home() {
         {/* ── Sidebar (1/3) ── */}
         <div className="flex flex-col gap-6">
 
-          {/* Horaires — sans mise en surbrillance du jour actuel */}
+          {/* Horaires */}
           <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-tl-3xl rounded-bl-3xl rounded-br-3xl p-6 shadow-lg text-white">
             <h3 className="text-yellow-300 font-bold text-lg mb-4">Horaires d'ouverture</h3>
             <ul className="space-y-1.5">
@@ -217,7 +190,7 @@ function Home() {
 
           {/* Prochaines compétitions */}
           <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-tl-3xl rounded-bl-3xl rounded-br-3xl p-6 shadow-lg text-white">
-            <h3 className="text-yellow-300 font-bold text-lg mb-4">🗓️ Prochaines compétitions</h3>
+            <h3 className="text-yellow-300 font-bold text-lg mb-4">Prochaines compétitions</h3>
             {prochainsTournois.length === 0 ? (
               <p className="text-green-200 text-sm text-center py-4">
                 Aucune compétition à venir pour le moment.

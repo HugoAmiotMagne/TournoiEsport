@@ -4,7 +4,8 @@ const Tournoi = require('../models/Tournoi');
 // Créer un jeu
 exports.createJeu = async (req, res) => {
   try {
-    const { Name, Mode, Map, plateforme, min_joueur, max_joueur } = req.body;
+    const { Name, Mode, Map, plateforme, min_joueur, max_joueur, image: imageFromBody } = req.body;
+    const file = req.file;
 
     // Validation
     if (!Name || !Mode || !Map || !plateforme || !min_joueur || !max_joueur) {
@@ -15,13 +16,26 @@ exports.createJeu = async (req, res) => {
       return res.status(400).json({ message: 'Le nombre minimum de joueurs ne peut pas être supérieur au maximum' });
     }
 
+    // Disallow Base64 in body; prefer multipart upload via `image` field
+    if (imageFromBody && /^data:image\/(jpeg|jpg|png|gif|webp);base64,/.test(imageFromBody)) {
+      return res.status(400).json({ message: 'Envoyez l\'image via multipart/form-data (champ `image`) plutôt qu\'en Base64.' });
+    }
+
+    let imagePath = null;
+    if (file) {
+      imagePath = `/uploads/images/${file.filename}`;
+    } else if (imageFromBody && /^https?:\/\//i.test(imageFromBody)) {
+      imagePath = imageFromBody;
+    }
+
     const jeu = new Jeu({
       Name,
       Mode,
       Map,
       plateforme,
       min_joueur,
-      max_joueur
+      max_joueur,
+      ...(imagePath && { image: imagePath })
     });
 
     await jeu.save();
@@ -82,15 +96,33 @@ exports.getJeuWithTournois = async (req, res) => {
 // Mettre à jour un jeu
 exports.updateJeu = async (req, res) => {
   try {
-    const { Name, Mode, Map, plateforme, min_joueur, max_joueur } = req.body;
+    const { Name, Mode, Map, plateforme, min_joueur, max_joueur, image: imageFromBody } = req.body;
+    const file = req.file;
 
     if (min_joueur && max_joueur && min_joueur > max_joueur) {
       return res.status(400).json({ message: 'Le nombre minimum de joueurs ne peut pas être supérieur au maximum' });
     }
 
+    // Disallow Base64 in body on update
+    if (imageFromBody && /^data:image\/(jpeg|jpg|png|gif|webp);base64,/.test(imageFromBody)) {
+      return res.status(400).json({ message: 'Envoyez l\'image via multipart/form-data (champ `image`) plutôt qu\'en Base64.' });
+    }
+
+    const updateData = { Name, Mode, Map, plateforme, min_joueur, max_joueur };
+    if (file) {
+      updateData.image = `/uploads/images/${file.filename}`;
+    } else if (imageFromBody !== undefined) {
+      // If provided and is a URL, keep it; if empty string/null, clear the image
+      if (imageFromBody === '' || imageFromBody === null) {
+        updateData.image = null;
+      } else if (/^https?:\/\//i.test(imageFromBody)) {
+        updateData.image = imageFromBody;
+      }
+    }
+
     const jeu = await Jeu.findByIdAndUpdate(
       req.params.id,
-      { Name, Mode, Map, plateforme, min_joueur, max_joueur },
+      updateData,
       { new: true, runValidators: true }
     );
 
