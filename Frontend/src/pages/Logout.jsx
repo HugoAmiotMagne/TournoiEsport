@@ -1,19 +1,16 @@
-import React, { useEffect } from "react";
+import React from 'react';
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Logout() {
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Clear any auth tokens (customize as needed)
-    try { localStorage.removeItem("token"); } catch (e) {}
-    // Redirect to home after logout
+    logout();
     navigate("/", { replace: true });
-  }, [navigate]);
+  }, [logout, navigate]);
 
-  return (
-    <div className="Logout">
-      Logging out...
-    </div>
-  );
+  return <div className="Logout">Déconnexion en cours...</div>;
 }

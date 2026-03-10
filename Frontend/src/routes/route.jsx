@@ -17,6 +17,7 @@ import NewTeam from "../pages/NewTeams";
 import TournoiId from "../pages/TournoisId";
 import TeamsId from "../pages/TeamsId";
 import MatchId from "../pages/MatchId";
+import Profil from "../pages/Profil";
 
 
 const router = createBrowserRouter([
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: "/logout",
         element: <Logout />
+      },
+      {
+        path: "/profil",
+        element: <Profil />
       },
       {
         path: "/register",

@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import gameBarHubLogo from '../../assets/GameBarHub.png';
 import Bouton from '../UI/Bouton';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Navigation() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
 
-  const Login     = () => { navigate('/login');    setIsMenuOpen(false); };
-  const Register  = () => { navigate('/register'); setIsMenuOpen(false); };
-  const Profil         = () => { navigate('/profil');   setIsMenuOpen(false); };
-  const Logout    = () => { setIsLoggedIn(false);  navigate('/'); setIsMenuOpen(false); };
+  const handleLogin    = () => { navigate('/login');    setIsMenuOpen(false); };
+  const handleRegister = () => { navigate('/register'); setIsMenuOpen(false); };
+  const handleProfil   = () => { navigate('/profil');   setIsMenuOpen(false); };
+  const handleLogout   = () => { logout(); navigate('/'); setIsMenuOpen(false); };
 
   return (
     <header className="bg-[#E8F5A8] shadow-2xl w-full sticky top-0 z-50">
@@ -38,13 +39,13 @@ export default function Navigation() {
             <NavLinks />
             {!isLoggedIn ? (
               <>
-                <Bouton onClick={Login}>Connexion</Bouton>
-                <Bouton onClick={Register}>Inscription</Bouton>
+                <Bouton onClick={handleLogin}>Connexion</Bouton>
+                <Bouton onClick={handleRegister}>Inscription</Bouton>
               </>
             ) : (
               <>
-                <Bouton onClick={Profil}>Profil</Bouton>
-                <Bouton onClick={Logout} color="red" full>Déconnexion</Bouton>
+                <Bouton onClick={handleProfil}>Profil</Bouton>
+                <Bouton onClick={handleLogout} color="red">Déconnexion</Bouton>
               </>
             )}
           </div>
@@ -56,13 +57,13 @@ export default function Navigation() {
             <NavLinks mobile onClick={() => setIsMenuOpen(false)} />
             {!isLoggedIn ? (
               <>
-                <Bouton onClick={Login} full>Connexion</Bouton>
-                <Bouton onClick={Register} full>Inscription</Bouton>
+                <Bouton onClick={handleLogin} full>Connexion</Bouton>
+                <Bouton onClick={handleRegister} full>Inscription</Bouton>
               </>
             ) : (
               <>
-                <Bouton onClick={Profil} color="green" full>Profil</Bouton>
-                <Bouton onClick={Logout} color="red" full>Déconnexion</Bouton>
+                <Bouton onClick={handleProfil} color="green" full>Profil</Bouton>
+                <Bouton onClick={handleLogout} color="red" full>Déconnexion</Bouton>
               </>
             )}
           </div>
@@ -73,7 +74,7 @@ export default function Navigation() {
 }
 
 function NavLinks({ mobile = false, onClick }) {
-  const base   = 'text-gray-800 font-medium hover:text-green-700 transition duration-300';
+  const base    = 'text-gray-800 font-medium hover:text-green-700 transition duration-300';
   const mobile_ = mobile ? 'block py-2 border-b border-gray-200' : '';
 
   return (
