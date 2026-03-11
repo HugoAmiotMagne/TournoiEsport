@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const tournoiController = require('../controllers/tournoi');
 const auth = require('../middleware/auth');
+const isAdmin = require('../middleware/isAdmin');
 
 /**
  * @swagger
@@ -102,7 +103,7 @@ router.get('/mes-tournois', auth, tournoiController.getMyTournois);
  *       401:
  *         description: Non autorisé
  */
-router.post('/', auth, tournoiController.createTournoi);
+router.post('/', auth, isAdmin, tournoiController.createTournoi);
 
 /**
  * @swagger
@@ -130,7 +131,7 @@ router.post('/', auth, tournoiController.createTournoi);
  *       401:
  *         description: Non autorisé
  */
-router.put('/:id', auth, tournoiController.updateTournoi);
+router.put('/:id', auth, isAdmin, tournoiController.updateTournoi);
 
 /**
  * @swagger
@@ -161,7 +162,7 @@ router.put('/:id', auth, tournoiController.updateTournoi);
  *       401:
  *         description: Non autorisé
  */
-router.patch('/:id/statut', auth, tournoiController.updateStatut);
+router.patch('/:id/statut', auth, isAdmin, tournoiController.updateStatut);
 
 /**
  * @swagger
@@ -183,6 +184,6 @@ router.patch('/:id/statut', auth, tournoiController.updateStatut);
  *       401:
  *         description: Non autorisé
  */
-router.delete('/:id', auth, tournoiController.deleteTournoi);
+router.delete('/:id', auth, isAdmin, tournoiController.deleteTournoi);
 
 module.exports = router;

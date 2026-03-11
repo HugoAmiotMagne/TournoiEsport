@@ -22,7 +22,7 @@ export default function Login() {
     setError('');
     try {
       const data = await loginUser(form.email, form.password);
-      login(data.user, data.token);
+      login({ ...data.user, id: data.userId }, data.token);
       navigate('/');
     } catch (err) {
       setError(err.message);

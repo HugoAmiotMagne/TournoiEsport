@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getMatchById } from '../services/api';
+import { getMatchById, imgUrl } from '../services/api';
 
 const rStyle = (tl, tr, bl, br) => ({
   borderTopLeftRadius: tl,
@@ -44,7 +44,7 @@ const TeamAvatar = ({ equipe, size = 'lg', highlight = false }) => {
   const sz     = size === 'lg' ? 'w-16 h-16 text-2xl' : 'w-10 h-10 text-base';
   const border = highlight ? 'border-yellow-400' : 'border-green-500';
   return equipe?.logo ? (
-    <img src={equipe.logo} alt={equipe.Name}
+    <img src={imgUrl(equipe.logo)} alt={equipe.Name}
       className={`${sz} rounded-full object-cover border-2 ${border} flex-shrink-0`} />
   ) : (
     <div className={`${sz} rounded-full bg-green-600 border-2 ${border} flex items-center justify-center flex-shrink-0 font-black text-white`}>

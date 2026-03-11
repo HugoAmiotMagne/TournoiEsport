@@ -58,7 +58,7 @@ app.use('/api/match', MatchRoutes);
 app.use('/api/streams', StreamRoutes); 
 app.use('/api/inscriptions', InscriptionRoutes); 
 app.use('/api/membreteams', MembreTeamRoutes); 
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')));
 
  
  

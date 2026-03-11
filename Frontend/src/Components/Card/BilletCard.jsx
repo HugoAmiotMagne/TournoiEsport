@@ -25,7 +25,7 @@ const STATUT_CONFIG = {
   annulé:     { label: 'Annulé',     color: 'text-orange-300',dot: 'bg-orange-400' },
 };
 
-export default function BilletCard({ billet }) {
+export default function BilletCard({ billet, onEdit }) {
   const cfg  = TYPE_CONFIG[billet.type]   ?? TYPE_CONFIG.Standard;
   const st   = STATUT_CONFIG[billet.statut] ?? STATUT_CONFIG.disponible;
   const dispo = billet.statut === 'disponible';
@@ -110,22 +110,39 @@ export default function BilletCard({ billet }) {
             : `${billet.prix} €`}
         </p>
 
-        {dispo ? (
-          <button
-            type="button"
-            className="bg-yellow-400 hover:bg-yellow-300 text-green-900 font-bold text-sm
-                       px-5 py-2.5 rounded-xl transition-all duration-200
-                       hover:scale-105 active:scale-95 flex items-center gap-2"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 9M5 21h14M10 17h4"/>
-            </svg>
-            Acheter
-          </button>
-        ) : (
-          <span className="text-white/50 text-sm font-medium italic">Indisponible</span>
-        )}
+        <div className="flex items-center gap-2">
+          {onEdit && (
+            <button
+              type="button"
+              onClick={() => onEdit(billet)}
+              className="bg-white/20 hover:bg-white/30 text-white font-bold text-sm
+                         px-4 py-2.5 rounded-xl transition-all duration-200
+                         hover:scale-105 active:scale-95 flex items-center gap-1.5"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+              Modifier
+            </button>
+          )}
+          {dispo ? (
+            <button
+              type="button"
+              className="bg-yellow-400 hover:bg-yellow-300 text-green-900 font-bold text-sm
+                         px-5 py-2.5 rounded-xl transition-all duration-200
+                         hover:scale-105 active:scale-95 flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 9M5 21h14M10 17h4"/>
+              </svg>
+              Acheter
+            </button>
+          ) : (
+            <span className="text-white/50 text-sm font-medium italic">Indisponible</span>
+          )}
+        </div>
       </div>
     </div>
   );

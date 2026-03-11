@@ -18,6 +18,10 @@ import TournoiId from "../pages/TournoisId";
 import TeamsId from "../pages/TeamsId";
 import MatchId from "../pages/MatchId";
 import Profil from "../pages/Profil";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminTournois from "../pages/admin/AdminTournois";
+import AdminMatchs from "../pages/admin/AdminMatchs";
+import AdminBillets from "../pages/admin/AdminBillets";
 
 
 const router = createBrowserRouter([
@@ -85,6 +89,22 @@ const router = createBrowserRouter([
       {
         path: "/inscription/tournois/:id",
         element: <Inscription />
+      },
+      {
+        path: "/admin",
+        element: <AdminDashboard />
+      },
+      {
+        path: "/admin/tournois",
+        element: <AdminTournois />
+      },
+      {
+        path: "/admin/matchs",
+        element: <AdminMatchs />
+      },
+      {
+        path: "/admin/billets",
+        element: <AdminBillets />
       }
     ]
   }

@@ -1,4 +1,8 @@
 const API_BASE_URL = 'http://localhost:3002/api';
+export const BACKEND_URL = 'http://localhost:3002';
+
+// Convertit un chemin relatif (/uploads/...) en URL complète vers le backend
+export const imgUrl = (path) => (path ? `${BACKEND_URL}${path}` : null);
 
 // Auth
 export const loginUser = async (email, password) => {
@@ -20,6 +24,40 @@ export const signupUser = async (userData) => {
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Erreur lors de l'inscription");
+  return data;
+};
+
+// Membres d'équipe
+export const getMembresByEquipe = async (equipeId) => {
+  const res = await fetch(`${API_BASE_URL}/membreteams/equipe/${equipeId}`);
+  if (!res.ok) throw new Error('Erreur lors de la récupération des membres');
+  return res.json();
+};
+
+export const getMesEquipes = async (userId) => {
+  const res = await fetch(`${API_BASE_URL}/membreteams/user/${userId}`);
+  if (!res.ok) throw new Error('Erreur lors de la récupération de votre équipe');
+  return res.json();
+};
+
+export const rejoindreEquipe = async (equipeId, token) => {
+  const res = await fetch(`${API_BASE_URL}/membreteams`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ equipe: equipeId }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Erreur lors de l'inscription");
+  return data;
+};
+
+export const quitterEquipe = async (membreId, token) => {
+  const res = await fetch(`${API_BASE_URL}/membreteams/${membreId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Erreur lors du départ de l'équipe");
   return data;
 };
 
@@ -54,14 +92,21 @@ export const getEquipeById = async (id) => {
 };
 
 // Inscriptions
-export const createInscription = async (inscriptionData) => {
+export const getInscriptionsByEquipe = async (equipeId) => {
+  const res = await fetch(`${API_BASE_URL}/inscriptions/equipe/${equipeId}`);
+  if (!res.ok) throw new Error('Erreur lors de la récupération des inscriptions');
+  return res.json();
+};
+
+export const createInscription = async (inscriptionData, token) => {
   const res = await fetch(`${API_BASE_URL}/inscriptions`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify(inscriptionData),
   });
-  if (!res.ok) throw new Error('Erreur lors de l\'inscription');
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Erreur lors de l'inscription");
+  return data;
 };
 
 // Utilisateurs
@@ -178,4 +223,96 @@ export const deleteBillet = async (id, token) => {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error('Impossible de supprimer le billet');
+};
+
+// ── ADMIN ──────────────────────────────────────────────────────────────────
+
+export const adminCreateTournoi = async (data, token) => {
+  const res = await fetch(`${API_BASE_URL}/tournois`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message || 'Erreur création tournoi');
+  return json;
+};
+
+export const adminUpdateTournoi = async (id, data, token) => {
+  const res = await fetch(`${API_BASE_URL}/tournois/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message || 'Erreur mise à jour tournoi');
+  return json;
+};
+
+export const adminDeleteTournoi = async (id, token) => {
+  const res = await fetch(`${API_BASE_URL}/tournois/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Erreur suppression tournoi');
+};
+
+export const adminCreateMatch = async (data, token) => {
+  const res = await fetch(`${API_BASE_URL}/matches`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message || 'Erreur création match');
+  return json;
+};
+
+export const adminUpdateMatch = async (id, data, token) => {
+  const res = await fetch(`${API_BASE_URL}/matches/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message || 'Erreur mise à jour match');
+  return json;
+};
+
+export const adminDeleteMatch = async (id, token) => {
+  const res = await fetch(`${API_BASE_URL}/matches/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Erreur suppression match');
+};
+
+export const adminCreateBillet = async (data, token) => {
+  const res = await fetch(`${API_BASE_URL}/billets`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message || 'Erreur création billet');
+  return json;
+};
+
+export const adminUpdateBillet = async (id, data, token) => {
+  const res = await fetch(`${API_BASE_URL}/billets/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message || 'Erreur mise à jour billet');
+  return json;
+};
+
+export const adminDeleteBillet = async (id, token) => {
+  const res = await fetch(`${API_BASE_URL}/billets/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Erreur suppression billet');
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { imgUrl } from '../../services/api';
 
 const normalizeStatus = (status) => {
   return (status || '')
@@ -28,7 +29,7 @@ const statusBadgeBg = (status) => {
 const TeamAvatar = ({ equipe }) => {
   return equipe?.logo ? (
     <img
-      src={equipe.logo}
+      src={imgUrl(equipe.logo)}
       alt={equipe.Name}
       className="w-10 h-10 rounded-full object-cover border-2 border-yellow-400 mx-auto mb-2"
     />

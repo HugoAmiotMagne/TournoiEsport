@@ -29,8 +29,10 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('user');
   };
 
+  const isAdmin = user?.role === 'admin';
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoggedIn: !!token }}>
+    <AuthContext.Provider value={{ user, token, login, logout, isLoggedIn: !!token, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const matchController = require('../controllers/match');
 const auth = require('../middleware/auth');
+const isAdmin = require('../middleware/isAdmin');
 
 /**
  * @swagger
@@ -120,7 +121,7 @@ router.get('/:id', matchController.getMatchById);
  *       401:
  *         description: Non autorisé
  */
-router.post('/', auth, matchController.createMatch);
+router.post('/', auth, isAdmin, matchController.createMatch);
 
 /**
  * @swagger
@@ -148,7 +149,7 @@ router.post('/', auth, matchController.createMatch);
  *       401:
  *         description: Non autorisé
  */
-router.put('/:id', auth, matchController.updateMatch);
+router.put('/:id', auth, isAdmin, matchController.updateMatch);
 
 /**
  * @swagger
@@ -170,6 +171,6 @@ router.put('/:id', auth, matchController.updateMatch);
  *       401:
  *         description: Non autorisé
  */
-router.delete('/:id', auth, matchController.deleteMatch);
+router.delete('/:id', auth, isAdmin, matchController.deleteMatch);
 
 module.exports = router;

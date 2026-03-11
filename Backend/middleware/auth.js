@@ -22,7 +22,7 @@ module.exports = (req, res, next) => {
 
     // Sinon on vérifie le token normal
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { id: decodedToken.userId };
+    req.user = { id: decodedToken.userId, role: decodedToken.role || 'user' };
     next();
 
   } catch (error) {

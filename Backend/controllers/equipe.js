@@ -1,23 +1,7 @@
 const Equipe = require('../models/Equipe');
 const User = require('../models/User');
 const Jeu = require('../models/Jeu');
-
-// ── Taille max du logo : 2 Mo en Base64 ──
-const MAX_LOGO_SIZE = 2 * 1024 * 1024; // 2 Mo
-
-const validateLogo = (logo) => {
-  if (!logo) return null;
-  if (!/^data:image\/(jpeg|jpg|png|gif|webp);base64,/.test(logo)) {
-    return 'Le logo doit être une image valide (jpeg, png, gif, webp) encodée en Base64';
-  }
-  // Calcul taille approximative du fichier depuis la string Base64
-  const base64Data = logo.split(',')[1] || '';
-  const sizeInBytes = Math.ceil((base64Data.length * 3) / 4);
-  if (sizeInBytes > MAX_LOGO_SIZE) {
-    return 'Le logo ne doit pas dépasser 2 Mo';
-  }
-  return null;
-};
+const MembreTeam = require('../models/MembreTeam');
 
 // Créer une équipe
 exports.createEquipe = async (req, res) => {
@@ -48,6 +32,14 @@ exports.createEquipe = async (req, res) => {
     });
 
     await equipe.save();
+
+    // Créer automatiquement le MembreTeam du créateur en tant que capitaine
+    await MembreTeam.create({
+      role: 'capitaine',
+      user: req.user.id,
+      equipe: equipe._id,
+    });
+
     await equipe.populate('capitaine membres jeu_principal');
 
     res.status(201).json(equipe);
@@ -124,8 +116,7 @@ exports.getMyEquipe = async (req, res) => {
 // Mettre à jour une équipe
 exports.updateEquipe = async (req, res) => {
   try {
-    const { Name, logo: logoFromBody, description, jeu_principal } = req.body;
-    const file = req.file;
+    const { Name, description, jeu_principal } = req.body;
 
     const equipe = await Equipe.findById(req.params.id);
     if (!equipe) {
@@ -143,17 +134,7 @@ exports.updateEquipe = async (req, res) => {
       }
     }
 
-    // Déterminer le logo à appliquer : priorité au fichier (req.file)
-    let logoToSet;
-    if (file) {
-      logoToSet = `/uploads/logos/${file.filename}`;
-    } else if (logoFromBody !== undefined) {
-      const logoError = validateLogo(logoFromBody);
-      if (logoError) {
-        return res.status(400).json({ message: logoError });
-      }
-      logoToSet = logoFromBody || null;
-    }
+    const logoToSet = req.file ? `/uploads/logos/${req.file.filename}` : undefined;
 
     if (jeu_principal) {
       const jeuExists = await Jeu.findById(jeu_principal);

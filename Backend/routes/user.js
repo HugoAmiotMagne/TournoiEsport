@@ -124,6 +124,8 @@ router.get("/:id", auth, userCtrl.getUserProfile);
  *       200:
  *         description: Profil mis à jour
  */
+router.put("/:id/password", auth, userCtrl.changePassword);
+
 router.put("/:id", auth, userCtrl.updateUserProfile);
 
 /**

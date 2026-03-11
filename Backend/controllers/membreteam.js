@@ -5,11 +5,12 @@ const User = require('../models/User');
 // Ajouter un membre à une équipe
 exports.addMembreToTeam = async (req, res) => {
   try {
-    const { role, user, equipe, numero_maillot, statut } = req.body;
+    const userId = req.user.id;
+    const { role, equipe, numero_maillot, statut } = req.body;
 
-    // Validation
-    if (!user || !equipe) {
-      return res.status(400).json({ message: 'L\'utilisateur et l\'équipe sont obligatoires' });
+    // Validatio
+    if (!equipe) {
+      return res.status(400).json({ message: "L'équipe est obligatoire" });
     }
 
     // Vérifier que l'équipe existe
@@ -19,20 +20,20 @@ exports.addMembreToTeam = async (req, res) => {
     }
 
     // Vérifier que l'utilisateur existe
-    const userExists = await User.findById(user);
+    const userExists = await User.findById(userId);
     if (!userExists) {
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
     }
 
-    // Vérifier que l'utilisateur n'est pas déjà dans l'équipe
-    const membreExistant = await MembreTeam.findOne({ user, equipe });
-    if (membreExistant) {
-      return res.status(400).json({ message: 'Cet utilisateur est déjà membre de cette équipe' });
+    // Vérifier que l'utilisateur n'est pas déjà dans une équipe (quelle qu'elle soit)
+    const dejaEquipier = await MembreTeam.findOne({ user: userId });
+    if (dejaEquipier) {
+      return res.status(400).json({ message: "Vous êtes déjà membre d'une équipe. Quittez-la avant d'en rejoindre une autre." });
     }
 
     const membre = new MembreTeam({
-      role,
-      user,
+      role: role || 'joueur',
+      user: userId,
       equipe,
       numero_maillot,
       statut

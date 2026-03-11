@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const billetCtrl = require('../controllers/billet');
 const auth = require('../middleware/auth');
+const isAdmin = require('../middleware/isAdmin');
 
 /**
  * @swagger
@@ -96,7 +97,7 @@ router.get('/:id', billetCtrl.getBilletById);
  *       401:
  *         description: Non autorisé
  */
-router.post('/', auth, billetCtrl.createBillet);
+router.post('/', auth, isAdmin, billetCtrl.createBillet);
 
 /**
  * @swagger
@@ -136,6 +137,8 @@ router.get('/mes-billets', auth, billetCtrl.getMesBillets);
  */
 router.put('/:id/annuler', auth, billetCtrl.annulerBillet);
 
+router.put('/:id', auth, isAdmin, billetCtrl.updateBillet);
+
 /**
  * @swagger
  * /api/billets/{id}:
@@ -156,6 +159,6 @@ router.put('/:id/annuler', auth, billetCtrl.annulerBillet);
  *       401:
  *         description: Non autorisé
  */
-router.delete('/:id', auth, billetCtrl.deleteBillet);
+router.delete('/:id', auth, isAdmin, billetCtrl.deleteBillet);
 
 module.exports = router;

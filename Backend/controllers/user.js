@@ -134,7 +134,7 @@ exports.loginUser = (req, res, next) => {
         }
 
         const token = jwt.sign(
-          { userId: user._id },
+          { userId: user._id, role: user.role },
           process.env.JWT_SECRET || "RANDOM_TOKEN_SECRET",
           { expiresIn: "24h" }
         );
@@ -145,7 +145,8 @@ exports.loginUser = (req, res, next) => {
           user: {
             email: user.email,
             nom: user.nom,
-            prenom: user.prenom
+            prenom: user.prenom,
+            role: user.role
           }
         });
       });
@@ -168,9 +169,9 @@ exports.getUserProfile = (req, res, next) => {
 
 // METTRE À JOUR LE PROFIL
 exports.updateUserProfile = (req, res, next) => {
-  if (req.auth.userId.toString() !== req.params.id) {
-    return res.status(403).json({ 
-      message: "Action non autorisée : vous ne pouvez modifier/supprimer que votre propre profil" 
+  if (req.user.id.toString() !== req.params.id) {
+    return res.status(403).json({
+      message: "Action non autorisée : vous ne pouvez modifier/supprimer que votre propre profil"
     });
   }
 
@@ -191,11 +192,38 @@ exports.updateUserProfile = (req, res, next) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
+// CHANGER LE MOT DE PASSE
+exports.changePassword = async (req, res, next) => {
+  if (req.user.id.toString() !== req.params.id) {
+    return res.status(403).json({ message: "Action non autorisée" });
+  }
+  try {
+    const { ancienMotDePasse, nouveauMotDePasse } = req.body;
+    if (!ancienMotDePasse || !nouveauMotDePasse) {
+      return res.status(400).json({ message: "Les deux mots de passe sont requis" });
+    }
+    if (nouveauMotDePasse.length < 8) {
+      return res.status(400).json({ message: "Le nouveau mot de passe doit contenir au moins 8 caractères" });
+    }
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });
+
+    const valid = await bcrypt.compare(ancienMotDePasse, user.password);
+    if (!valid) return res.status(401).json({ message: "Ancien mot de passe incorrect" });
+
+    user.password = await bcrypt.hash(nouveauMotDePasse, 10);
+    await user.save();
+    res.status(200).json({ message: "Mot de passe modifié avec succès" });
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors du changement de mot de passe", error: error.message });
+  }
+};
+
 // SUPPRIMER UN UTILISATEUR
 exports.deleteUser = (req, res, next) => {
-  if (req.auth.userId.toString() !== req.params.id) {
-    return res.status(403).json({ 
-      message: "Action non autorisée : vous ne pouvez modifier/supprimer que votre propre profil" 
+  if (req.user.id.toString() !== req.params.id) {
+    return res.status(403).json({
+      message: "Action non autorisée : vous ne pouvez modifier/supprimer que votre propre profil"
     });
   }
 
@@ -204,8 +232,8 @@ exports.deleteUser = (req, res, next) => {
       if (!user) {
         return res.status(404).json({ message: "Utilisateur non trouvé" });
       }
-      res.status(200).json({ 
-        message: "Votre compte a été supprimé avec succès" 
+      res.status(200).json({
+        message: "Votre compte a été supprimé avec succès"
       });
     })
     .catch((error) => res.status(500).json({ error }));

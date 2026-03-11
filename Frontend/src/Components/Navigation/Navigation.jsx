@@ -6,12 +6,13 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin    = () => { navigate('/login');    setIsMenuOpen(false); };
   const handleRegister = () => { navigate('/register'); setIsMenuOpen(false); };
   const handleProfil   = () => { navigate('/profil');   setIsMenuOpen(false); };
+  const handleAdmin    = () => { navigate('/admin');    setIsMenuOpen(false); };
   const handleLogout   = () => { logout(); navigate('/'); setIsMenuOpen(false); };
 
   return (
@@ -44,6 +45,7 @@ export default function Navigation() {
               </>
             ) : (
               <>
+                {isAdmin && <Bouton onClick={handleAdmin} color="yellow">Admin</Bouton>}
                 <Bouton onClick={handleProfil}>Profil</Bouton>
                 <Bouton onClick={handleLogout} color="red">Déconnexion</Bouton>
               </>
@@ -62,6 +64,7 @@ export default function Navigation() {
               </>
             ) : (
               <>
+                {isAdmin && <Bouton onClick={handleAdmin} color="yellow" full>Admin</Bouton>}
                 <Bouton onClick={handleProfil} color="green" full>Profil</Bouton>
                 <Bouton onClick={handleLogout} color="red" full>Déconnexion</Bouton>
               </>

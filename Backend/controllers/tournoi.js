@@ -167,8 +167,7 @@ exports.updateTournoi = async (req, res) => {
       return res.status(404).json({ message: 'Tournoi non trouvé' });
     }
 
-    // Vérifier que l'utilisateur est le créateur
-    if (tournoi.createur.toString() !== req.user.id) {
+    if (req.user.role !== 'admin' && tournoi.createur && tournoi.createur.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Vous n\'êtes pas autorisé à modifier ce tournoi' });
     }
 
@@ -209,8 +208,7 @@ exports.updateStatut = async (req, res) => {
       return res.status(404).json({ message: 'Tournoi non trouvé' });
     }
 
-    // Vérifier que l'utilisateur est le créateur
-    if (tournoi.createur.toString() !== req.user.id) {
+    if (req.user.role !== 'admin' && tournoi.createur && tournoi.createur.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Vous n\'êtes pas autorisé à modifier ce tournoi' });
     }
 
@@ -235,8 +233,7 @@ exports.deleteTournoi = async (req, res) => {
       return res.status(404).json({ message: 'Tournoi non trouvé' });
     }
 
-    // Vérifier que l'utilisateur est le créateur
-    if (tournoi.createur.toString() !== req.user.id) {
+    if (req.user.role !== 'admin' && tournoi.createur && tournoi.createur.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Vous n\'êtes pas autorisé à supprimer ce tournoi' });
     }
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getTournoiById } from '../services/api';
+import { getTournoiById, imgUrl } from '../services/api';
 
 const rStyle = (tl, tr, bl, br) => ({
   borderTopLeftRadius: tl,
@@ -63,7 +63,7 @@ const EquipeDetail = ({ equipe }) => (
     {/* En-tête */}
     <div className="flex items-center gap-4">
       {equipe.logo ? (
-        <img src={equipe.logo} alt={equipe.Name}
+        <img src={imgUrl(equipe.logo)} alt={equipe.Name}
           className="w-14 h-14 rounded-full object-cover border-2 border-yellow-400 flex-shrink-0" />
       ) : (
         <div className="w-14 h-14 rounded-full bg-green-600 border-2 border-yellow-400 flex items-center justify-center flex-shrink-0">
@@ -159,7 +159,7 @@ const MatchDetail = ({ match }) => (
         {/* Participant 1 */}
         <div className="flex-1 text-center">
           {match.participant1?.logo ? (
-            <img src={match.participant1.logo} alt=""
+            <img src={imgUrl(match.participant1.logo)} alt=""
               className="w-12 h-12 rounded-full object-cover mx-auto mb-2 border-2 border-green-500" />
           ) : (
             <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center mx-auto mb-2 text-lg font-bold">
@@ -182,7 +182,7 @@ const MatchDetail = ({ match }) => (
         {/* Participant 2 */}
         <div className="flex-1 text-center">
           {match.participant2?.logo ? (
-            <img src={match.participant2.logo} alt=""
+            <img src={imgUrl(match.participant2.logo)} alt=""
               className="w-12 h-12 rounded-full object-cover mx-auto mb-2 border-2 border-green-500" />
           ) : (
             <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center mx-auto mb-2 text-lg font-bold">
@@ -466,7 +466,7 @@ export default function TournoiId() {
             <h3 className="text-yellow-300 font-semibold text-sm uppercase tracking-widest mb-3">Jeu</h3>
             <div className="bg-green-800 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4" style={asymSm}>
               {tournoi.jeu.image && (
-                <img src={tournoi.jeu.image} alt={tournoi.jeu.name ?? tournoi.jeu.Name}
+                <img src={imgUrl(tournoi.jeu.image)} alt={tournoi.jeu.name ?? tournoi.jeu.Name}
                   className="w-16 h-16 object-cover rounded-lg flex-shrink-0" />
               )}
               <div>
@@ -519,7 +519,7 @@ export default function TournoiId() {
               {equipes.map((equipe, i) => (
                 <div key={equipe._id ?? i} className="bg-green-800 p-4 rounded-xl flex items-center gap-3">
                   {equipe.logo ? (
-                    <img src={equipe.logo} alt={equipe.Name}
+                    <img src={imgUrl(equipe.logo)} alt={equipe.Name}
                       className="w-12 h-12 rounded-full object-cover border-2 border-yellow-400 flex-shrink-0" />
                   ) : (
                     <div className="w-12 h-12 rounded-full bg-green-600 border-2 border-yellow-400 flex items-center justify-center flex-shrink-0">

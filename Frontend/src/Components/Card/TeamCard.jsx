@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { imgUrl } from '../../services/api';
 
 export default function TeamCard({ equipe }) {
   return (
-    <Link to={`/equipes/${equipe._id}`} className="block group">
+    <Link to={`/teams/${equipe._id}`} className="block group">
       <div
         className="bg-gradient-to-br from-green-600 to-green-700 shadow-lg p-6 sm:p-8 text-white
                    group-hover:shadow-2xl group-hover:scale-[1.02] transition-all duration-300 h-full flex flex-col"
@@ -18,7 +19,7 @@ export default function TeamCard({ equipe }) {
         <div className="flex items-center gap-4 mb-5">
           {equipe.logo ? (
             <img
-              src={equipe.logo}
+              src={imgUrl(equipe.logo)}
               alt={`Logo ${equipe.Name}`}
               className="w-14 h-14 rounded-full object-cover flex-shrink-0 border-2 border-yellow-400"
             />
@@ -59,7 +60,7 @@ export default function TeamCard({ equipe }) {
           )}
         </div>
 
-        {/* Infos bas de carte */}
+        {/* Infos bas de carte  */}
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-green-700 p-3 rounded-xl">
             <p className="text-green-200 text-xs mb-1">Capitaine</p>

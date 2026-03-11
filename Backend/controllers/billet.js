@@ -107,8 +107,7 @@ exports.annulerBillet = async (req, res) => {
       return res.status(404).json({ message: 'Billet non trouvé' });
     }
 
-    // Vérifier que l'utilisateur est le propriétaire du billet
-    if (billet.user._id.toString() !== req.user.id) {
+    if (req.user.role !== 'admin' && billet.user._id.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Vous n\'êtes pas autorisé à annuler ce billet' });
     }
 
@@ -143,8 +142,7 @@ exports.updateBillet = async (req, res) => {
       return res.status(404).json({ message: 'Billet non trouvé' });
     }
 
-    // Seul le propriétaire peut modifier
-    if (billet.user.toString() !== req.user.id) {
+    if (req.user.role !== 'admin' && billet.user.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Vous n\'êtes pas autorisé à modifier ce billet' });
     }
 
@@ -177,8 +175,7 @@ exports.deleteBillet = async (req, res) => {
       return res.status(404).json({ message: 'Billet non trouvé' });
     }
 
-    // Seul le propriétaire peut supprimer
-    if (billet.user.toString() !== req.user.id) {
+    if (req.user.role !== 'admin' && billet.user.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Vous n\'êtes pas autorisé à supprimer ce billet' });
     }
 
