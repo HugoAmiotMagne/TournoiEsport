@@ -39,10 +39,9 @@ export default function Billetterie() {
       type:           billet.type,
       prix:           billet.prix,
       quantite:       billet.quantite,
-      statut:         billet.statut,
-      salle:          billet.salle?._id ?? billet.salle ?? '',
-      tournoi:        billet.tournoi?._id ?? billet.tournoi ?? '',
-      date_evenement: billet.date_evenement?.slice(0, 10) ?? '',
+      statut:  billet.statut,
+      salle:   billet.salle?._id ?? billet.salle ?? '',
+      tournoi: billet.tournoi?._id ?? billet.tournoi ?? '',
     });
     setEditError('');
   }
@@ -229,7 +228,7 @@ export default function Billetterie() {
                 >
                   <option value="">Sélectionner une salle</option>
                   {salles.map(s => (
-                    <option key={s._id} value={s._id}>{s.nom || s.name}</option>
+                    <option key={s._id} value={s._id}>{s.Name}</option>
                   ))}
                 </select>
               </div>
@@ -246,16 +245,6 @@ export default function Billetterie() {
                     <option key={t._id} value={t._id}>{t.Name}</option>
                   ))}
                 </select>
-              </div>
-
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date de l'événement</label>
-                <input
-                  type="date"
-                  className="w-full border rounded-xl px-3 py-2 text-sm"
-                  value={editForm.date_evenement}
-                  onChange={e => setEditForm({ ...editForm, date_evenement: e.target.value })}
-                />
               </div>
 
               <div className="col-span-2 flex gap-3 mt-2">

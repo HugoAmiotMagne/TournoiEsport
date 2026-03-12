@@ -134,7 +134,7 @@ exports.annulerBillet = async (req, res) => {
 // Mettre à jour un billet
 exports.updateBillet = async (req, res) => {
   try {
-    const { type, prix, quantite, date_evenement } = req.body;
+    const { type, prix, quantite, statut, salle, tournoi } = req.body;
 
     const billet = await Billet.findById(req.params.id);
     
@@ -151,10 +151,15 @@ exports.updateBillet = async (req, res) => {
       return res.status(400).json({ message: 'Impossible de modifier un billet déjà utilisé' });
     }
 
+    const updateData = { type, prix, quantite, statut };
+    if (salle)        updateData.salle   = salle;
+    if (tournoi)      updateData.tournoi = tournoi;
+    else              updateData.$unset  = { tournoi: '' };
+
     const updatedBillet = await Billet.findByIdAndUpdate(
       req.params.id,
-      { type, prix, quantite, date_evenement },
-      { new: true, runValidators: true }
+      updateData,
+      { new: true }
     )
       .populate('user', '-Password')
       .populate('salle')

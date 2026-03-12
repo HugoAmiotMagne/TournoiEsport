@@ -7,7 +7,7 @@ import {
 } from '../../services/api';
 
 const TYPES = ['Standard', 'VIP', 'PRESSE'];
-const EMPTY_FORM = { type: 'Standard', prix: 0, quantite: 1, salle: '', tournoi: '', date_evenement: '' };
+const EMPTY_FORM = { type: 'Standard', prix: 0, quantite: 1, salle: '', tournoi: '' };
 
 export default function AdminBillets() {
   const { isAdmin, token, user } = useAuth();
@@ -111,7 +111,7 @@ export default function AdminBillets() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Salle</label>
               <select className="w-full border rounded-xl px-3 py-2 text-sm" value={form.salle} onChange={e => setForm({...form, salle: e.target.value})} required>
                 <option value="">Sélectionner une salle</option>
-                {salles.map(s => <option key={s._id} value={s._id}>{s.nom || s.name}</option>)}
+                {salles.map(s => <option key={s._id} value={s._id}>{s.Name}</option>)}
               </select>
             </div>
             <div>
@@ -120,10 +120,6 @@ export default function AdminBillets() {
                 <option value="">Aucun tournoi</option>
                 {tournois.map(t => <option key={t._id} value={t._id}>{t.Name}</option>)}
               </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date de l'événement</label>
-              <input type="date" className="w-full border rounded-xl px-3 py-2 text-sm" value={form.date_evenement} onChange={e => setForm({...form, date_evenement: e.target.value})} />
             </div>
             <div className="md:col-span-2 flex gap-3 mt-2">
               <button type="submit" disabled={loading} className="bg-green-700 hover:bg-green-600 disabled:bg-green-400 text-white font-bold px-6 py-2.5 rounded-xl transition">
@@ -156,7 +152,7 @@ export default function AdminBillets() {
                 <td className="px-4 py-3 font-medium">{b.type}</td>
                 <td className="px-4 py-3 text-gray-600">{b.prix} €</td>
                 <td className="px-4 py-3 text-gray-600">{b.quantite}</td>
-                <td className="px-4 py-3 text-gray-600">{b.salle?.nom || b.salle?.name || '—'}</td>
+                <td className="px-4 py-3 text-gray-600">{b.salle?.Name || '—'}</td>
                 <td className="px-4 py-3 text-gray-600">{b.tournoi?.Name || '—'}</td>
                 <td className="px-4 py-3">
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statutColor[b.statut] || ''}`}>{b.statut}</span>

@@ -15,6 +15,7 @@ export default function AdminDashboard() {
     { to: '/admin/tournois', label: 'Tournois', desc: 'Créer, modifier et supprimer des tournois', color: 'from-green-600 to-green-700' },
     { to: '/admin/matchs',   label: 'Matchs',   desc: 'Planifier et gérer les matchs',           color: 'from-yellow-500 to-yellow-600' },
     { to: '/admin/billets',  label: 'Billets',  desc: 'Créer et gérer les billets disponibles',  color: 'from-blue-600 to-blue-700' },
+    { to: '/admin/jeux',     label: 'Jeux',     desc: 'Ajouter et modifier les jeux disponibles', color: 'from-purple-600 to-purple-700' },
   ];
 
   return (

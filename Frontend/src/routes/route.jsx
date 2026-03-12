@@ -22,6 +22,7 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminTournois from "../pages/admin/AdminTournois";
 import AdminMatchs from "../pages/admin/AdminMatchs";
 import AdminBillets from "../pages/admin/AdminBillets";
+import AdminJeux from "../pages/admin/AdminJeux";
 
 
 const router = createBrowserRouter([
@@ -105,6 +106,10 @@ const router = createBrowserRouter([
       {
         path: "/admin/billets",
         element: <AdminBillets />
+      },
+      {
+        path: "/admin/jeux",
+        element: <AdminJeux />
       }
     ]
   }

@@ -316,3 +316,34 @@ export const adminDeleteBillet = async (id, token) => {
   });
   if (!res.ok) throw new Error('Erreur suppression billet');
 };
+
+export const adminCreateJeu = async (data, token) => {
+  const res = await fetch(`${API_BASE_URL}/jeux`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message || 'Erreur création jeu');
+  return json;
+};
+
+export const adminUpdateJeu = async (id, data, token) => {
+  const res = await fetch(`${API_BASE_URL}/jeux/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message || 'Erreur mise à jour jeu');
+  return json;
+};
+
+export const adminDeleteJeu = async (id, token) => {
+  const res = await fetch(`${API_BASE_URL}/jeux/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json.message || 'Erreur suppression jeu');
+};

@@ -144,7 +144,7 @@ export default function AdminTournois() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Salle (optionnel)</label>
               <select className="w-full border rounded-xl px-3 py-2 text-sm" value={form.salle} onChange={e => setForm({...form, salle: e.target.value})}>
                 <option value="">Aucune salle</option>
-                {salles.map(s => <option key={s._id} value={s._id}>{s.nom || s.name}</option>)}
+                {salles.map(s => <option key={s._id} value={s._id}>{s.Name}</option>)}
               </select>
             </div>
             <div>
