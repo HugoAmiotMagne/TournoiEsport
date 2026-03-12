@@ -23,7 +23,7 @@ exports.createJeu = async (req, res) => {
 
     let imagePath = null;
     if (file) {
-      imagePath = `/uploads/images/${file.filename}`;
+      imagePath = file.path;
     } else if (imageFromBody && /^https?:\/\//i.test(imageFromBody)) {
       imagePath = imageFromBody;
     }
@@ -110,7 +110,7 @@ exports.updateJeu = async (req, res) => {
 
     const updateData = { Name, Mode, Map, plateforme, min_joueur, max_joueur };
     if (file) {
-      updateData.image = `/uploads/images/${file.filename}`;
+      updateData.image = file.path;
     } else if (imageFromBody !== undefined) {
       // If provided and is a URL, keep it; if empty string/null, clear the image
       if (imageFromBody === '' || imageFromBody === null) {

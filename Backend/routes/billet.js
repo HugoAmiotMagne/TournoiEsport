@@ -25,6 +25,24 @@ const isAdmin = require('../middleware/isAdmin');
  */
 router.get('/', billetCtrl.getAllBillets);
 
+// Routes protégées
+
+/**
+ * @swagger
+ * /api/billets/mes-billets:
+ *   get:
+ *     summary: Récupérer mes billets (utilisateur connecté)
+ *     tags: [Billets]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Liste des billets de l'utilisateur
+ *       401:
+ *         description: Non autorisé
+ */
+router.get('/mes-billets', auth, billetCtrl.getMesBillets);
+
 /**
  * @swagger
  * /api/billets/{id}:
@@ -44,8 +62,6 @@ router.get('/', billetCtrl.getAllBillets);
  *         description: Billet non trouvé
  */
 router.get('/:id', billetCtrl.getBilletById);
-
-// Routes protégées
 
 /**
  * @swagger
@@ -98,22 +114,6 @@ router.get('/:id', billetCtrl.getBilletById);
  *         description: Non autorisé
  */
 router.post('/', auth, isAdmin, billetCtrl.createBillet);
-
-/**
- * @swagger
- * /api/billets/mes-billets:
- *   get:
- *     summary: Récupérer mes billets (utilisateur connecté)
- *     tags: [Billets]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Liste des billets de l'utilisateur
- *       401:
- *         description: Non autorisé
- */
-router.get('/mes-billets', auth, billetCtrl.getMesBillets);
 
 /**
  * @swagger

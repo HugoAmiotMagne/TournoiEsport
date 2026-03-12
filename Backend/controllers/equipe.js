@@ -26,7 +26,7 @@ exports.createEquipe = async (req, res) => {
       Name,
       description,
       jeu_principal,
-      logo: req.file ? `/uploads/logos/${req.file.filename}` : null,
+      logo: req.file ? req.file.path : null,
       capitaine: req.user.id,
       membres: [req.user.id],
     });
@@ -134,7 +134,7 @@ exports.updateEquipe = async (req, res) => {
       }
     }
 
-    const logoToSet = req.file ? `/uploads/logos/${req.file.filename}` : undefined;
+    const logoToSet = req.file ? req.file.path : undefined;
 
     if (jeu_principal) {
       const jeuExists = await Jeu.findById(jeu_principal);

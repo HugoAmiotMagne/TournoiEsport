@@ -1,8 +1,14 @@
-const API_BASE_URL = 'http://localhost:3002/api';
-export const BACKEND_URL = 'http://localhost:3002';
+const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
+export const BACKEND_URL = import.meta.env.VITE_API_URL;
 
-// Convertit un chemin relatif (/uploads/...) en URL complète vers le backend
-export const imgUrl = (path) => (path ? `${BACKEND_URL}${path}` : null);
+// Convertit un chemin d'image en URL complète
+// - URL Cloudinary (commence par http) → retournée telle quelle
+// - Ancien chemin local (/uploads/...) → préfixé avec le backend
+export const imgUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  return `${BACKEND_URL}${path}`;
+};
 
 // Auth
 export const loginUser = async (email, password) => {

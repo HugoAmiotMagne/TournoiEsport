@@ -25,9 +25,24 @@ const { testInsert } = require('./testInsert');
  
 const app = express(); 
 
-// ← AJOUTE CORS ICI (AVANT express.json())
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://tournoi-esport.vercel.app',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/tournoi-esport[a-z0-9-]*\.vercel\.app$/.test(origin)
+    ) {
+      return callback(null, true);
+    }
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 
@@ -62,15 +77,24 @@ app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')));
 
  
  
-// MongoDB 
-mongoose 
-  .connect(process.env.MONGODB_URI) 
-  .then(async () => { 
-    console.log('Connexion à MongoDB réussie !'); 
-    await testInsert(); 
-  }) 
-  .catch((err) => { 
-    console.error('Connexion à MongoDB échouée :', err); 
-  }); 
+// MongoDB — compatible serverless (Vercel)
+let isConnected = false;
+
+async function connectDB() {
+  if (isConnected) return;
+  await mongoose.connect(process.env.MONGODB_URI, {
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 45000,
+  });
+  isConnected = true;
+  console.log('Connexion à MongoDB réussie !');
+  if (process.env.NODE_ENV !== 'production') {
+    await testInsert();
+  }
+}
+
+connectDB().catch((err) => {
+  console.error('Connexion à MongoDB échouée :', err);
+});
  
 module.exports = app;
