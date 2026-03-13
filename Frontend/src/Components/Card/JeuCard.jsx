@@ -29,6 +29,10 @@ export default function JeuCard({ jeu }) {
             alt={jeu.Name}
             className="w-full h-full object-cover"
             style={asymImg}
+            width="400"
+            height="192"
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center" style={asymImg}>

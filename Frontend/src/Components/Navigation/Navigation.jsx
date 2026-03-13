@@ -22,15 +22,18 @@ export default function Navigation() {
 
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src={gameBarHubLogo} alt="GameBarHub" className="h-14 w-auto" />
+            <img src={gameBarHubLogo} alt="GameBarHub" className="h-14 w-auto" width="56" height="56" fetchpriority="high" />
           </Link>
 
           {/* Burger (mobile) */}
           <button
-            className="md:hidden text-gray-800 focus:outline-none"
+            className="md:hidden text-gray-800 focus:outline-none p-3 min-w-[44px] min-h-[44px] flex items-center justify-center"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
           >
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
@@ -55,7 +58,7 @@ export default function Navigation() {
 
         {/* Menu Mobile */}
         {isMenuOpen && (
-          <div className="md:hidden mt-6 flex flex-col gap-4">
+          <div id="mobile-menu" className="md:hidden mt-6 flex flex-col gap-4">
             <NavLinks mobile onClick={() => setIsMenuOpen(false)} />
             {!isLoggedIn ? (
               <>

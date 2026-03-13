@@ -1,14 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { getTournois } from "../services/api";
-import slide1 from "../assets/slide/photo-exterieur.jpg";
-import slide2 from "../assets/slide/photo-ordi.jpg";
-import slide3 from "../assets/slide/photo-du-bar.jpg";
-
 const slides = [
-  { src: slide1, alt: "Slide 1" },
-  { src: slide2, alt: "Slide 2" },
-  { src: slide3, alt: "Slide 3" },
+  { src: "/slides/photo-exterieur.jpg", alt: "Extérieur du Game Bar Hub" },
+  { src: "/slides/photo-ordi.jpg",      alt: "Postes gaming du Game Bar Hub" },
+  { src: "/slides/photo-du-bar.jpg",    alt: "Bar du Game Bar Hub" },
 ];
 
 const horaires = [
@@ -45,21 +41,29 @@ function ImageSlider() {
             alt={slide.alt}
             className="w-full flex-shrink-0 object-cover"
             style={{ height: "520px", minWidth: "100%" }}
+            width="1280"
+            height="520"
+            loading={i === 0 ? "eager" : "lazy"}
+            fetchpriority={i === 0 ? "high" : "low"}
+            decoding={i === 0 ? "sync" : "async"}
           />
         ))}
       </div>
 
       {/* Dots */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0 z-10">
         {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}
-            className={`rounded-full transition-all duration-300 ${
-              i === current ? "bg-yellow-400 w-5 h-2.5" : "bg-white/60 w-2.5 h-2.5"
-            }`}
+            className="p-3 flex items-center justify-center"
             aria-label={`Aller au slide ${i + 1}`}
-          />
+            aria-current={i === current ? "true" : undefined}
+          >
+            <span className={`block rounded-full transition-all duration-300 ${
+              i === current ? "bg-yellow-400 w-5 h-2.5" : "bg-white/60 w-2.5 h-2.5"
+            }`} />
+          </button>
         ))}
       </div>
     </div>
@@ -90,14 +94,10 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-[#E8F5A8] w-full font-sans">
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
-        .font-script { font-family: 'Satisfy', cursive; }
-      `}</style>
 
       {/* ── Bannière ── */}
       <div className="w-full bg-gradient-to-br from-green-600 to-green-700 py-12 sm:py-16 px-4 sm:px-8 text-center">
-        <p className="text-gray-800 text-sm font-medium mb-2">
+        <p className="text-white/90 text-sm font-medium mb-2">
           {new Date().toLocaleDateString("fr-FR", {
             weekday: "long",
             month: "long",

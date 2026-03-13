@@ -10,7 +10,9 @@ export default function App() {
     <AuthProvider>
       <div className="App">
         <Navigation />
-        <Outlet />
+        <main>
+          <Outlet />
+        </main>
         <Footer />
       </div>
     </AuthProvider>

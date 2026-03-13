@@ -1,10 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <meta name="description" content="Game Bar Hub – Bar et lieu d'esport. Tournois, équipes, matchs et billetterie." />
+    <title>Game Bar Hub – Bar et Lieu d'Esport</title>
+    <!-- Preload image LCP (premier slide hero) -->
+    <link rel="preload" as="image" href="/slides/photo-exterieur.jpg" fetchpriority="high" />
+    <!-- Preconnect backend API (économies ~330ms sur le LCP) -->
+    <link rel="preconnect" href="https://tournoiesportapi.vercel.app" />
+    <!-- Google Fonts en non-bloquant -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" /></noscript>
   </head>
   <body>
     <div id="root"></div>
